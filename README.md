@@ -33,7 +33,7 @@ This is a general purpose CivRest API call to get different type of data related
 | Success response | 200
 | Response data | The requested data in JSON format or string
 | Error response | Any other
-| Sample call | curl -X PUT http://localhost:8000/rest/civdata?what=8&param=China,Rome
+| Sample call | curl -X GET http://localhost:8000/rest/civdata?what=8&param=China,Rome
 
 ### Get Civilization data, start two players game with automated player
 This CivRest API call initializes two players game and the oponent is automated player. The parameter specifies the civilizations engaged in the game. This call returns the game instance unique id.
@@ -47,5 +47,5 @@ This CivRest API call initializes two players game and the oponent is automated 
 | Success response | 200
 | Response data | String, the unique game identifier
 | Error response | Any other
-| Sample call | curl -X PUT http://localhost:8000/rest/civdata?what=8&param=China,Rome
+| Sample call | curl -X GET http://localhost:8000/rest/civdata?what=8&param=China,Rome
 
