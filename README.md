@@ -43,7 +43,7 @@ This CivRest API call initializes two players game and the oponent is automated 
 | URL | /civdata
 | Request type | GET
 | URL Params | what=8, obligatory
-| URL Params | param=\<string\>, obligatory, the two civilizations starting the game, the civilizations names seperated by coma.
+| URL Params | param=\<string\>, obligatory, the civilizations names seperated by coma, the second civilization is controlled by automated player.
 | Success response | 200
 | Response data | String, the unique game identifier
 | Error response | Any other
