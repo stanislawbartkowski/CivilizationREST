@@ -76,7 +76,8 @@ Sample output<br>
 
 ```JSON
 [
-{"gameid":9,"createtime":1578742625922,"players":["China"],"waiting":["Rome"]},          {"gameid":8,"createtime":1578742617068,"players":["China"],"waiting":["Rome"]}
+{"gameid":9,"createtime":1578742625922,"players":["China"],"waiting":["Rome"]},
+{"gameid":8,"createtime":1578742617068,"players":["China"],"waiting":["Rome"]}
 ]
 ```
 Single game:<br>
