@@ -68,8 +68,8 @@ This API call returns a list of games waiting for another player to join in. The
 | URL | /civdata
 | Request type | GET
 | URL Params | what=5, obligatory
-| Success response | 200
-| Response data | List of waiting games in JSON format
+| Success response | 200 or 204
+| Response data | List of waiting games in JSON format or empty string (code 204) if there is no waiting games
 | Error response | Any other
 | Sample call | curl -X GET "http://localhost:8000/rest/civdata?what=5"
 
