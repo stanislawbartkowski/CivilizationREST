@@ -1,4 +1,5 @@
 import com.sun.net.httpserver.HttpExchange;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,18 +42,17 @@ public class CivRestServices {
         private final static String AUTOM = "autom";
 
         ServiceRegisterAutom() {
-            super("registerautom",CivHttpHelper.PUT);
-            addParam(AUTOM,CivHttpHelper.PARAMTYPE.BOOLEAN);
+            super("registerautom", CivHttpHelper.PUT);
+            addParam(AUTOM, CivHttpHelper.PARAMTYPE.BOOLEAN);
         }
 
         @Override
-        public void handle(HttpExchange httpExchange) throws IOException {
-            if (!verifyURL(httpExchange)) return;
+        public void servicehandle(HttpExchange httpExchange) throws IOException {
             // do action
             automready = getLogParam(AUTOM);
             CivLogger.info("Automated player registered.");
             // return NODATA, OK here
-            produceResponse(httpExchange,"",CivHttpHelper.HTTPNODATA);
+            produceResponse(httpExchange, "", CivHttpHelper.HTTPNODATA);
         }
     }
 
@@ -73,14 +73,13 @@ public class CivRestServices {
         private final int SINGLEGAMEWITHAUTOM = 9;
 
         ServiceCivData() {
-            super("civdata",CivHttpHelper.GET);
-            addParam(WHAT,CivHttpHelper.PARAMTYPE.INT);
-            addParam(PARAM,CivHttpHelper.PARAMTYPE.STRING);
+            super("civdata", CivHttpHelper.GET);
+            addParam(WHAT, CivHttpHelper.PARAMTYPE.INT);
+            addParam(PARAM, CivHttpHelper.PARAMTYPE.STRING, new CivHttpHelper.ParamValue(""));
         }
 
         @Override
-        public void handle(HttpExchange httpExchange) throws IOException {
-            if (!verifyURL(httpExchange)) return;
+        public void servicehandle(HttpExchange httpExchange) throws IOException {
             // do action
             int what = getIntParam(WHAT);
             if (what < 0 || what > 9) {
@@ -117,7 +116,7 @@ public class CivRestServices {
                     w = II.GETJOURNAL();
                     break;
                 case TWOPLAYERSGAMEWITHAUTOM:
-                    res =  extractAutomatedToken(httpExchange,automready,waitinglist,II.getData(II.REGISTEROWNERTWOGAME(), param, null));
+                    res = extractAutomatedToken(httpExchange, automready, waitinglist, II.getData(II.REGISTEROWNERTWOGAME(), param, null));
                     break;
 
                 case SINGLEGAMEWITHAUTOM:
@@ -125,9 +124,75 @@ public class CivRestServices {
                     w = II.REGISTEROWNER();
                     break;
             }
-            if (res == null) res =  II.getData(w, param, null);
-            produceResponse(httpExchange,res,CivHttpHelper.HTTPOK);
+            try {
+                if (res == null) res = II.getData(w, param, null);
+            } catch (Exception e) {
+                int a = 0;
+            }
+            if (res.equals("")) produceNODATAResponse(httpExchange);
+            else produceOKResponse(httpExchange, res);
         }
     }
+
+    static class ServiceJoinGame extends CivHttpHelper.RestServiceHelper {
+
+        private final static String GAMEID = "gameid";
+        private final static String CIV = "civ";
+
+        ServiceJoinGame() {
+            super("joingame", CivHttpHelper.POST);
+            addParam(GAMEID, CivHttpHelper.PARAMTYPE.INT);
+            addParam(CIV, CivHttpHelper.PARAMTYPE.STRING);
+        }
+
+        @Override
+        public void servicehandle(HttpExchange httpExchange) throws IOException {
+            int gameid = getIntParam(GAMEID);
+            String civ = getStringParam(CIV);
+            String token = II.joinGame(gameid, civ);
+            produceOKResponse(httpExchange, token);
+        }
+    }
+
+    static class GetWaitingGame extends CivHttpHelper.RestServiceHelper {
+
+        GetWaitingGame() {
+            super("getwaiting", CivHttpHelper.GET);
+        }
+
+        @Override
+        public void servicehandle(HttpExchange httpExchange) throws IOException {
+            String gameid = "";
+            if (!waitinglist.isEmpty()) {
+                gameid = waitinglist.get(0);
+                waitinglist.remove(0);
+            }
+            produceOKResponse(httpExchange, gameid);
+        }
+
+    }
+
+    static class ServiceItemizeCommand extends CivHttpHelper.RestServiceHelper {
+
+        private final static String TOKEN="token";
+        private final static String COMMAND="command";
+
+        ServiceItemizeCommand() {
+            super("itemize", CivHttpHelper.GET);
+            addParam(TOKEN, CivHttpHelper.PARAMTYPE.STRING);
+            addParam(COMMAND, CivHttpHelper.PARAMTYPE.STRING);
+        }
+
+        @Override
+        public void servicehandle(HttpExchange httpExchange) throws IOException {
+            String token = getStringParam(TOKEN);
+            String command = getStringParam(COMMAND);
+            String res = II.itemizeCommand(token,command);
+            produceOKResponse(httpExchange, res);
+        }
+
+    }
+
+
 
 }

@@ -1,3 +1,4 @@
+import civilization.io.readdir.Param;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -6,6 +7,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.logging.Level;
 
 class CivHttpHelper {
 
@@ -16,7 +18,7 @@ class CivHttpHelper {
     static final String PUT = "PUT";
     static final String DELETE = "DELETE";
 
-    static final int HTTPOK = 200;
+    private static final int HTTPOK = 200;
     static final int HTTPNODATA = 204;
     static final int HTTPMETHODNOTALLOWED = 405;
     static final int HTTPBADREQUEST = 400;
@@ -26,20 +28,16 @@ class CivHttpHelper {
         BOOLEAN, INT, STRING
     }
 
-    static class RestParam {
-        final PARAMTYPE ptype;
-        final boolean obligatory;
-
-        RestParam(PARAMTYPE ptype, boolean obligatory) {
-            this.ptype = ptype;
-            this.obligatory = obligatory;
-        }
-    }
-
     static class ParamValue {
         final boolean logvalue;
         final int intvalue;
         final String stringvalue;
+
+        ParamValue() {
+            this.logvalue = false;
+            this.intvalue = -1;
+            this.stringvalue = null;
+        }
 
         ParamValue(boolean logvalue) {
             this.logvalue = logvalue;
@@ -61,6 +59,24 @@ class CivHttpHelper {
 
     }
 
+    static class RestParam {
+        final PARAMTYPE ptype;
+        final boolean obligatory;
+        final ParamValue defa;
+
+        RestParam(PARAMTYPE ptype) {
+            this.ptype = ptype;
+            this.obligatory = true;
+            defa = new ParamValue();
+        }
+
+        RestParam(PARAMTYPE ptype, ParamValue defa) {
+            this.ptype = ptype;
+            this.obligatory = false;
+            this.defa = defa;
+        }
+    }
+
     abstract static class RestServiceHelper implements HttpHandler {
         final String url;
         final String expectedMethod;
@@ -68,21 +84,50 @@ class CivHttpHelper {
         int successResponse;
         final Map<String, ParamValue> values = new HashMap<String, ParamValue>();
 
+        abstract void servicehandle(HttpExchange httpExchange) throws IOException;
+
+
+        @Override
+        public void handle(HttpExchange httpExchange) throws IOException {
+            if (!verifyURL(httpExchange)) return;
+            try {
+                servicehandle(httpExchange);
+            } catch (Exception e) {
+                CivLogger.L.log(Level.SEVERE, "Error while handling service", e);
+                throw e;
+            }
+        }
+
         RestServiceHelper(String url, String expectedMethod) {
             this.url = url;
             this.expectedMethod = expectedMethod;
         }
 
         protected void addParam(String paramName, PARAMTYPE ptype) {
-            params.put(paramName, new RestParam(ptype, true));
+            params.put(paramName, new RestParam(ptype));
+        }
+
+        protected void addParam(String paramName, PARAMTYPE ptype, ParamValue defa) {
+            params.put(paramName, new RestParam(ptype, defa));
         }
 
         protected void produceResponse(HttpExchange t, String message, int HTTPResponse) throws IOException {
-            byte[] response = message.getBytes();
-            t.sendResponseHeaders(HTTPResponse, response.length);
-            try (OutputStream os = t.getResponseBody()) {
-                os.write(response);
+            if ((message == null) || message.equals("")) t.sendResponseHeaders(HTTPNODATA, 0);
+            else {
+                byte[] response = message.getBytes();
+                t.sendResponseHeaders(HTTPResponse, response.length);
+                try (OutputStream os = t.getResponseBody()) {
+                    os.write(response);
+                }
             }
+        }
+
+        protected void produceOKResponse(HttpExchange t, String message) throws IOException {
+            produceResponse(t, message, HTTPOK);
+        }
+
+        protected void produceNODATAResponse(HttpExchange t) throws IOException {
+            produceResponse(t, "", HTTPNODATA);
         }
 
         private boolean verifyMethod(HttpExchange t) throws IOException {
@@ -98,48 +143,54 @@ class CivHttpHelper {
             if (!verifyMethod(t)) return false;
             // verify param
             // check if parameters allowed
-            String[] q = t.getRequestURI().getQuery().split("&");
-            for (String qline : q) {
-                String[] vv = qline.split("=");
-                String s = vv[0];
-                String val = vv.length == 1 ? "" : vv[1];
-                if (!params.containsKey(s)) {
-                    produceResponse(t, "Parameter " + s + " not expected.", HTTPBADREQUEST);
-                    return false;
-                }
-                // get value
-                RestParam rpara = params.get(s);
-                switch (rpara.ptype) {
-                    case BOOLEAN: {
-                        if (val.equals("true") || val.equals("false")) {
-                            values.put(s, new ParamValue(val.equals("true")));
-                            break;
-                        }
-                        // incorrect true or false
-                        produceResponse(t, "Parameter " + s + "?" + val + " true or false expected", HTTPBADREQUEST);
+            if (t.getRequestURI().getQuery() != null) {
+                String[] q = t.getRequestURI().getQuery().split("&");
+                for (String qline : q) {
+                    String[] vv = qline.split("=");
+                    String s = vv[0];
+                    String val = vv.length == 1 ? "" : vv[1];
+                    if (!params.containsKey(s)) {
+                        produceResponse(t, "Parameter " + s + " not expected.", HTTPBADREQUEST);
                         return false;
                     }
-                    case INT: {
-                        try {
-                            int i = Integer.parseInt(val);
-                            values.put(s, new ParamValue(i));
-                            break;
-                        } catch (NumberFormatException e) {
-                            produceResponse(t, "Parameter " + s + "?" + val + " incorrect integer value", HTTPBADREQUEST);
+                    // get value
+                    RestParam rpara = params.get(s);
+                    switch (rpara.ptype) {
+                        case BOOLEAN: {
+                            if (val.equals("true") || val.equals("false")) {
+                                values.put(s, new ParamValue(val.equals("true")));
+                                break;
+                            }
+                            // incorrect true or false
+                            produceResponse(t, "Parameter " + s + "?" + val + " true or false expected", HTTPBADREQUEST);
                             return false;
                         }
+                        case INT: {
+                            try {
+                                int i = Integer.parseInt(val);
+                                values.put(s, new ParamValue(i));
+                                break;
+                            } catch (NumberFormatException e) {
+                                produceResponse(t, "Parameter " + s + "?" + val + " incorrect integer value", HTTPBADREQUEST);
+                                return false;
+                            }
+                        }
+                        case STRING: {
+                            values.put(s, new ParamValue(val));
+                            break;
+                        }
                     }
-                    case STRING: {
-                        values.put(s, new ParamValue(val));
-                        break;
-                    }
-                }
-            } // for
+                } // for
+            }
             // verify obligatory params
             for (String s : params.keySet()) {
-                if (params.get(s).obligatory && !values.containsKey(s)) {
-                    produceResponse(t, "Parameter " + s + " not found in url", HTTPBADREQUEST);
-                    return false;
+                if (!values.containsKey(s)) {
+                    if (params.get(s).obligatory) {
+                        produceResponse(t, "Parameter " + s + " not found in url", HTTPBADREQUEST);
+                        return false;
+                    }
+                    // set default value
+                    values.put(s, params.get(s).defa);
                 }
             }
 

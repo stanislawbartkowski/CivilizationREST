@@ -15,6 +15,9 @@ public class CivHttpServer {
         CivLogger.info("Start CivRest HTTP Server, listening on port " + PORT);
         CivHttpHelper.registerService(server, new CivRestServices.ServiceRegisterAutom());
         CivHttpHelper.registerService(server, new CivRestServices.ServiceCivData());
+        CivHttpHelper.registerService(server, new CivRestServices.GetWaitingGame());
+        CivHttpHelper.registerService(server, new CivRestServices.ServiceJoinGame());
+        CivHttpHelper.registerService(server, new CivRestServices.ServiceItemizeCommand());
         server.setExecutor(null); // creates a default executor
         server.start();
     }
