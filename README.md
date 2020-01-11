@@ -14,8 +14,8 @@ The CivilizationREST allows engagement of automated player.<br>
 At the beginning, the automated player should register itself using "Register automation" API. It is only the signal "I'm up and ready". The signal unlocks "Get Civilization data/start two players with automated" API call.<br>
 <br>
 To start the automated game, the following sequence should happen.<br.
-* The human or another automated player should launch "Get Civilization data/start two players with automated" API call. It returns the id of the player, human or another automated player. The second game id is waiting if the CivilizationREST local cache.
-* The automated player should monitor "Automated player, get waiting player id.". If empty, nobody is waiting. If not empty, the second game waiting id is extracted and removed from the local cache and returned. The two player game can start, the first player is the player which launched "Get Civilization data/start two players with automated", the second player is the owner of "Automated player, get waiting player id."
+* The human or another automated player should launch "Get Civilization data/start two players with automated" API call. It returns the token of the player, human or another automated if machine to machine game is going to be started. The new game is started and waiting for another player to join.
+* The automated player should monitor "Automated player, get waiting game id.". If empty, no game is waiting. If not empty, the waiting game id is extracted and removed from the local cache and returned. Then the player should scan the list of waiting games and join the proper game using id just extracted.
 
 ## Register automation
 This API call informs CivREST that automated player is up and ready to play. After this call, the CivREST unblocks "automated player" feature. Otherwise, only training or human to human game is allowed.
@@ -44,7 +44,7 @@ This is a general purpose CivRest API call to get different type of data related
 | Sample call | curl -X GET http://localhost:8000/rest/civdata?what=8&param=China,Rome
 
 ### Get Civilization data, start two players game with automated player
-This CivRest API call initializes two players game and the oponent is automated player. The parameter specifies the civilizations engaged in the game. This call returns the first player id. The second player id is cached in the CivilizationREST and can be extracted by "Automated player, get waiting player id.".
+This CivRest API call initializes two players game and the oponent is automated player. The parameter specifies the civilizations engaged in the game. This call returns the first player token. The game id is cached in the CivilizationREST and can be extracted by "Automated player, get game id".
 
 | Info | Content
 | -- | -- |
@@ -57,8 +57,8 @@ This CivRest API call initializes two players game and the oponent is automated 
 | Error response | Any other
 | Sample call | curl -X GET "http://localhost:8000/rest/civdata?what=8&param=China,Rome"
 
-## Automated player, get waiting player id.
-This API is designed for automated player. It returns the id of the game waiting for automated player to pick up. If the id s empty, it means that there is no waiting game.
+## Automated player, get game id waiting for automated player.
+This API is designed for automated player. It returns the id of the game waiting for automated player to pick up. If the id s empty, it means that there is no waiting game. 
 
 | Info | Content
 | -- | -- |
