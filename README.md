@@ -95,8 +95,8 @@ This API is designed for automated player. It returns the id of the game waiting
 | URL | /getwaiting
 | Request type | GET
 | URL Params | no any params
-| Success response | 200
-| Response data | String, if empty then there is no waiting list, if not empty, the game id waiting for automated player.
+| Success response | 200 or 204
+| Response data | String, if empty then there is no waiting list (code 204), if not empty, the game id waiting for automated player (code 200).
 | Error response | Any other
 | Sample call | curl -X GET http://localhost:8000/rest/getwaiting
 
