@@ -87,7 +87,7 @@ Single game:<br>
 * waiting, the civilization waiting for the player
 
 ## Automated player, get game id waiting for automated player.
-This API is designed for automated player. It returns the id of the game waiting for automated player to pick up. If the id s empty, it means that there is no waiting game. 
+This API is designed for automated player. It returns the id of the game waiting for automated player to pick up. The empty id means that there is no waiting game. 
 
 | Info | Content
 | -- | -- |
