@@ -59,6 +59,7 @@ This CivRest API call initializes two players game and the oponent is automated 
 
 ## Automated player, get waiting player id.
 This API is designed for automated player. It returns the id of the game waiting for automated player to pick up. If the id s empty, it means that there is no waiting game.
+
 | Info | Content
 | -- | -- |
 | URL | /getwaiting
