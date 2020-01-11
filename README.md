@@ -140,6 +140,6 @@ This API call takes the list of all currently possible variants of the command.
 | Success response | 200
 | Response data | JSON, list of possible variants of the command
 | Error response | Any other
-| Sample call | curl -X POST "http://localhost:8000/rest/itemize?token=xxxxx&command=BUILDCITY"
+| Sample call | curl -X POST "http://localhost:8000/rest/itemize?token=xxxxx&command=SETCAPITAL"
 
 
