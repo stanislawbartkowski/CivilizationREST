@@ -128,5 +128,18 @@ This API call allows to join new or resumed game as the second player. The game 
 | Error response | Any other
 | Sample call | curl -X POST "http://localhost:8000/rest/joingame?gameid=5&civ=China"
 
+## Itemize command
+This API call takes the list of all currently possible variants of the command. 
+
+| Info | Content
+| -- | -- |
+| URL | /itemize
+| Request type | GET
+| URL Params | token : the player token
+| URL Params | command to itemize
+| Success response | 200
+| Response data | JSON, list of possible variants of the command
+| Error response | Any other
+| Sample call | curl -X POST "http://localhost:8000/rest/itemize?token=xxxxx&command=BUILDCITY"
 
 
