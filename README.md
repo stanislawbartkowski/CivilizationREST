@@ -16,8 +16,9 @@ At the beginning, the automated player should register itself using "Register au
 To start the automated game, the following sequence should happen.<br.
 * The human or another automated player should launch "Get Civilization data/start two players with automated" API call. It returns the token of the player, human or another automated if machine to machine game is going to be started. The new game is started and waiting for another player to join.
 * The automated player should monitor "Automated player, get waiting game id.". If empty, no game is waiting. If not empty, the waiting game id is extracted and removed from the local cache and returned. 
-* The player can scan the list of all waiting games using "Get list of games waiting for another player to join in".
-
+* The player can scan the list of all waiting games using "Get list of games waiting for another player to join in" and extract the civilization name.
+* Then the player should join the game using "Join game" API call using proper *gameid* and *civ* parameter. The call returns the player token.
+* Having received the token, the player can play the new or resumed game.
 
 ## Register automation
 This API call informs CivREST that automated player is up and ready to play. After this call, the CivREST unblocks "automated player" feature. Otherwise, only training or human to human game is allowed.
@@ -98,4 +99,19 @@ This API is designed for automated player. It returns the id of the game waiting
 | Response data | String, if empty then there is no waiting list, if not empty, the game id waiting for automated player.
 | Error response | Any other
 | Sample call | curl -X GET http://localhost:8000/rest/getwaiting
+
+## Join game
+This API call allows to join new or resumed game as the second player. The game should be the one of the games on the list of waiting games (Get list of games waiting for another player to join in). If successfull, the call return the token of the player.
+
+| Info | Content
+| -- | -- |
+| URL | /joingame
+| Request type | GET
+| URL Params | no any params
+| Success response | 200
+| Response data | String, the token of the player
+| Error response | Any other
+| Sample call | curl -X GET http://localhost:8000/rest/joingame?gameid=5&civ=China
+
+
 
