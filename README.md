@@ -101,17 +101,17 @@ This API is designed for automated player. It returns the id of the game waiting
 | Sample call | curl -X GET http://localhost:8000/rest/getwaiting
 
 ## Join game
-This API call allows to join new or resumed game as the second player. The game should be the one of the games on the list of waiting games (Get list of games waiting for another player to join in). If successfull, the call return the token of the player.
+This API call allows to join new or resumed game as the second player. The game should be the one of the games on the list of waiting games ("Get list of games waiting for another player to join in"). If successfull, the call return the token of the player.
 
 | Info | Content
 | -- | -- |
 | URL | /joingame
-| Request type | GET
+| Request type | POST
 | URL Params | no any params
 | Success response | 200
 | Response data | String, the token of the player
 | Error response | Any other
-| Sample call | curl -X GET http://localhost:8000/rest/joingame?gameid=5&civ=China
+| Sample call | curl -X POST "http://localhost:8000/rest/joingame?gameid=5&civ=China"
 
 
 
