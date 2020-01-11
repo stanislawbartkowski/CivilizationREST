@@ -46,6 +46,21 @@ This is a general purpose CivRest API call to get different type of data related
 | Error response | Any other
 | Sample call | curl -X GET http://localhost:8000/rest/civdata?what=8&param=China,Rome
 
+The following data (*what* parameter) are possible.
+
+| Id |  Number | Content
+| -- | -- | -- | 
+|LISTOFRES | 0 | List of resources
+|REGISTEROWNER | 1|
+|GETBOARD | 2 | Current board in JSON formar
+|GETGAMES|3 |
+|UNREGISTERTOKEN|4| Unregister token, end of the game
+|WAITINGGAMES|5| List of games in waiting
+|TWOPLAYERSGAME|6| Initialize two players game, human to human
+|GETJOURNAL|7|Get the player journal
+|TWOPLAYERSGAMEWITHAUTOM|8| Initialize game with automated player
+|SINGLEGAMEWITHAUTOM|9
+
 ### Get Civilization data, start two players game with automated player
 This CivRest API call initializes two players game and the oponent is automated player. The parameter specifies the civilizations engaged in the game. This call returns the first player token. The game id is cached in the CivilizationREST and can be extracted by "Automated player, get game id".
 
