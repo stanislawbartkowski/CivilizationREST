@@ -153,7 +153,7 @@ Executes command in the current game. The player is identified by the token rece
 | URL Params | action : obligatory, command to execute
 | URL Params | row: obligatory, integer, the row where command is going to be executed, if the command does not require it, -1
 | URL Params | column: obligatory, integer, the column where command is going to be executed, if the command does not require it, -1
-| URL Params | jsparam: obligatory, the command params in JSON format, the content depends on the action
+| URL Params | jsparam: optional, the command params in JSON format, the content depends on the action. If the command does not require any additonal parameters, the *jsparam* can be ignored
 | Success response | 200
 | Response data | string
 | Error response | Any other
