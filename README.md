@@ -159,4 +159,15 @@ Executes command in the current game. The player is identified by the token rece
 | Error response | Any other
 | Sample call | curl -X POST "http://localhost:8000/rest/itemize?token=8jd6f1dpnl66dkk6mmr1eb266e&action=SETCAPITAL&row=1&col=2"
 
+## All player are ready
+This call checks if all players are registered. For two players game, it returns true if the second player has joined the game.
 
+| Info | Content
+| -- | -- |
+| URL | /allready
+| Request type | GET
+| URL Params | token, obligatory, the token of the player who started or resumed the game. 
+| Success response | 200
+| Response data | string, 'true' if the second player joined or 'false' otherwise
+| Error response | Any other
+| Sample call | curl -X POST "http://localhost:8000/rest/allready?token=8jd6f1dpnl66dkk6mmr1eb266e
