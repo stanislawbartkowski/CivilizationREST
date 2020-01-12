@@ -143,7 +143,7 @@ This API call takes the list of all currently possible variants of the command.
 | Sample call | curl -X POST "http://localhost:8000/rest/itemize?token=xxxxx&command=SETCAPITAL"
 
 ## Execute command
-Executes command in the current game. The player is identified by the token received from "Get Civilization data, start two players game with automated player" or "Join game"
+Executes command in the current game. The player is identified by the token received from "Get Civilization data, start two players game with automated player" or "Join game". The (row,column) identifies the boards square. If the command/action is not dependent on it, pass (-1,-1). The *jsparam* provided command parameter. It's format and content depend on the command.
 
 | Info | Content
 | -- | -- |
