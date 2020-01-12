@@ -135,10 +135,27 @@ This API call takes the list of all currently possible variants of the command.
 | -- | -- |
 | URL | /itemize
 | Request type | GET
-| URL Params | token : the player token
-| URL Params | command to itemize
+| URL Params | token : obligatory, the player token
+| URL Params | command: obligatory, command to itemize
 | Success response | 200
 | Response data | JSON, list of possible variants of the command
+| Error response | Any other
+| Sample call | curl -X POST "http://localhost:8000/rest/itemize?token=xxxxx&command=SETCAPITAL"
+
+## Execute command
+Executes command in the current game. The player is identified by the token received from "Get Civilization data, start two players game with automated player" or "Join game"
+
+| Info | Content
+| -- | -- |
+| URL | /command
+| Request type | POST
+| URL Params | token : obligatory, the player token
+| URL Params | action : obligatory, command to execute
+| URL Params | row: obligatory, integer, the row where command is going to be executed, if the command does not require it, -1
+| URL Params | column: obligatory, integer, the column where command is going to be executed, if the command does not require it, -1
+| URL Params | params: obligatory, the command params in JSON format, the content depends on the action
+| Success response | 200
+| Response data | string
 | Error response | Any other
 | Sample call | curl -X POST "http://localhost:8000/rest/itemize?token=xxxxx&command=SETCAPITAL"
 
