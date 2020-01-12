@@ -157,6 +157,6 @@ Executes command in the current game. The player is identified by the token rece
 | Success response | 200
 | Response data | string
 | Error response | Any other
-| Sample call | curl -X POST "http://localhost:8000/rest/itemize?token=xxxxx&command=SETCAPITAL"
+| Sample call | curl -X POST "http://localhost:8000/rest/itemize?token=8jd6f1dpnl66dkk6mmr1eb266e&action=SETCAPITAL&row=1&col=2"
 
 
