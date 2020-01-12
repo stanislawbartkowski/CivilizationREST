@@ -155,7 +155,7 @@ Executes command in the current game. The player is identified by the token rece
 | URL Params | column: obligatory, integer, the column where command is going to be executed, if the command does not require it, -1
 | URL Params | jsparam: optional, the command params in JSON format, the content depends on the action. If the command does not require any additonal parameters, the *jsparam* can be ignored
 | Success response | 200
-| Response data | string
+| Response data | Empty string if success. If not empty, error occured and the reponse contains the error message.
 | Error response | Any other
 | Sample call | curl -X POST "http://localhost:8000/rest/itemize?token=8jd6f1dpnl66dkk6mmr1eb266e&action=SETCAPITAL&row=1&col=2"
 
