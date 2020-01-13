@@ -205,14 +205,14 @@ This call checks if all players are registered. For two players game, it returns
 
 ## Delete the game
 
-This call deletes the game identified by *gameid*. The game is not available any longer.
+This call deletes the game identified by *gameid*. The game is not available any longer. 
 
 | Info | Content
 | -- | -- |
 | URL | /delete
 | Request type | DELETE
 | URL Params | gameid, integer, obligator, the identifier of the game to remove
-| Success response | 200
-| Response data | string 
-| Error response | Any other
+| Success response | 204
+| Response data | nothing
+| Error response | Any other. The call does not report any error if the game does not exist.
 | Sample call | curl -X DELETE "http://localhost:8000/rest/delete?gameid=5"
