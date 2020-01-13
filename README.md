@@ -205,7 +205,8 @@ This call checks if all players are registered. For two players game, it returns
 
 ## Delete the game
 
-This call deletes the game identified by *gameid*. The game is not available any longer
+This call deletes the game identified by *gameid*. The game is not available any longer.
+
 | Info | Content
 | -- | -- |
 | URL | /delete
