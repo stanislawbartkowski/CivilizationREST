@@ -1,8 +1,13 @@
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import civilization.II.interfaces.IC;
 import civilization.II.interfaces.RAccess;
@@ -26,6 +31,17 @@ public class CivRestServices {
     static {
         RA.getConn().setConnection(REDISHOST, REDISPORT, 0);
         II.setR(RA);
+    }
+
+    private static String toS(InputStream i) {
+        String result;
+        try {
+            result = CharStreams.toString(new InputStreamReader(i, Charsets.UTF_8));
+            return result;
+        } catch (IOException e) {
+            CivLogger.L.log(Level.SEVERE, "Error while reading the game boardd", e);
+            return null;
+        }
     }
 
     private static String extractAutomatedToken(String s) {
@@ -174,8 +190,8 @@ public class CivRestServices {
 
     static class ServiceItemizeCommand extends CivHttpHelper.RestServiceHelper {
 
-        private final static String TOKEN="token";
-        private final static String COMMAND="command";
+        private final static String TOKEN = "token";
+        private final static String COMMAND = "command";
 
         ServiceItemizeCommand() {
             super("itemize", CivHttpHelper.GET);
@@ -187,12 +203,107 @@ public class CivRestServices {
         public void servicehandle(HttpExchange httpExchange) throws IOException {
             String token = getStringParam(TOKEN);
             String command = getStringParam(COMMAND);
-            String res = II.itemizeCommand(token,command);
+            String res = II.itemizeCommand(token, command);
+            produceOKResponse(httpExchange, res);
+        }
+    }
+
+    static class ServiceExecuteCommand extends CivHttpHelper.RestServiceHelper {
+
+        private final static String TOKEN = "token";
+        private final static String ACTION = "action";
+        private final static String ROW = "row";
+        private final static String COL = "col";
+        private final static String JSPARAM = "jsparam";
+
+        ServiceExecuteCommand() {
+            super("command", CivHttpHelper.POST);
+            addParam(TOKEN, CivHttpHelper.PARAMTYPE.STRING);
+            addParam(ACTION, CivHttpHelper.PARAMTYPE.STRING);
+            addParam(ROW, CivHttpHelper.PARAMTYPE.INT);
+            addParam(COL, CivHttpHelper.PARAMTYPE.INT);
+            addParam(JSPARAM, CivHttpHelper.PARAMTYPE.STRING, new CivHttpHelper.ParamValue(null));
+        }
+
+        @Override
+        public void servicehandle(HttpExchange httpExchange) throws IOException {
+            String token = getStringParam(TOKEN);
+            String action = getStringParam(ACTION);
+            int row = getIntParam(ROW);
+            int col = getIntParam(COL);
+            String jsparam = getStringParam(JSPARAM);
+            String res = II.executeCommand(token, action, row, col, jsparam);
             produceOKResponse(httpExchange, res);
         }
 
     }
 
+    static class ServiceDeleteGame extends CivHttpHelper.RestServiceHelper {
 
+        private final static String GAMEID = "gameid";
+
+        ServiceDeleteGame() {
+            super("delete", CivHttpHelper.DELETE);
+            addParam(GAMEID, CivHttpHelper.PARAMTYPE.INT);
+        }
+
+        @Override
+        public void servicehandle(HttpExchange httpExchange) throws IOException {
+            int gameid = getIntParam(GAMEID);
+            II.deleteGame(gameid);
+            produceNODATAResponse(httpExchange);
+        }
+    }
+
+    static class ServiceClearWaiting extends CivHttpHelper.RestServiceHelper {
+
+
+        ServiceClearWaiting() {
+            super("clearwaitinglist", CivHttpHelper.POST);
+        }
+
+        @Override
+        public void servicehandle(HttpExchange httpExchange) throws IOException {
+            waitinglist.clear();
+            produceNODATAResponse(httpExchange);
+        }
+    }
+
+    static class ServiceAllReady extends CivHttpHelper.RestServiceHelper {
+
+        private final static String TOKEN = "token";
+
+        ServiceAllReady() {
+            super("allready", CivHttpHelper.GET);
+            addParam(TOKEN, CivHttpHelper.PARAMTYPE.STRING);
+        }
+
+        @Override
+        public void servicehandle(HttpExchange httpExchange) throws IOException {
+            String token = getStringParam(TOKEN);
+            boolean res = II.allPlayersReady(token);
+            produceOKResponse(httpExchange, Boolean.toString(res));
+        }
+    }
+
+    static class ServiceDeployGame extends CivHttpHelper.RestServiceHelper {
+
+        private final static String CIV = "civ";
+
+        ServiceDeployGame() {
+            super("deploygame", CivHttpHelper.POST);
+            addParam(CIV, CivHttpHelper.PARAMTYPE.STRING);
+        }
+
+        @Override
+        public void servicehandle(HttpExchange httpExchange) throws IOException {
+            String civs = getStringParam(CIV);
+            InputStream is = httpExchange.getRequestBody();
+            String board = toS(is);
+            String res = II.readPlayerGameS(board, civs);
+            produceOKResponse(httpExchange, res);
+        }
+    }
 
 }
+

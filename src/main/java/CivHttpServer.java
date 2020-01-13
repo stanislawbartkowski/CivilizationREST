@@ -18,6 +18,11 @@ public class CivHttpServer {
         CivHttpHelper.registerService(server, new CivRestServices.GetWaitingGame());
         CivHttpHelper.registerService(server, new CivRestServices.ServiceJoinGame());
         CivHttpHelper.registerService(server, new CivRestServices.ServiceItemizeCommand());
+        CivHttpHelper.registerService(server, new CivRestServices.ServiceExecuteCommand());
+        CivHttpHelper.registerService(server, new CivRestServices.ServiceDeleteGame());
+        CivHttpHelper.registerService(server, new CivRestServices.ServiceClearWaiting());
+        CivHttpHelper.registerService(server, new CivRestServices.ServiceAllReady());
+        CivHttpHelper.registerService(server, new CivRestServices.ServiceDeployGame());
         server.setExecutor(null); // creates a default executor
         server.start();
     }
