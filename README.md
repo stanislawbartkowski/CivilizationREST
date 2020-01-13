@@ -216,3 +216,17 @@ This call deletes the game identified by *gameid*. The game is not available any
 | Response data | nothing
 | Error response | Any other. The call does not report any error if the game does not exist.
 | Sample call | curl -X DELETE "http://localhost:8000/rest/delete?gameid=5"
+
+## Clear the waiting for automated player list.
+
+This call is used only for testing
+
+| Info | Content
+| -- | -- |
+| URL | /clearwaitinglist
+| Request type | POST
+| URL Params | no params
+| Success response | 204
+| Response data | nothing
+| Error response | Any other.
+| Sample call | curl -X POST "http://localhost:8000/rest/clearwaitinglist"
