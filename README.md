@@ -230,3 +230,19 @@ This call is used only for testing
 | Response data | nothing
 | Error response | Any other.
 | Sample call | curl -X POST "http://localhost:8000/rest/clearwaitinglist"
+
+## Deploy the game
+
+This call deploys the game board in JSON format and creates a new game.
+
+| Info | Content
+| -- | -- |
+| URL | /deploygame
+| Request type | POST
+| URL Params | civ, string, obligatory, the list of civilization separated by coma participating in the game
+| Success response | 204
+| Response data | nothing
+| Error response | Any other.
+| Sample call | curl -X POST "http://localhost:8000/rest/deploygame?civ=China" -d /< JSON \>"
+
+
