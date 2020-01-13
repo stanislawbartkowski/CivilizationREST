@@ -61,6 +61,37 @@ The following data (*what* parameter) are possible.
 |TWOPLAYERSGAMEWITHAUTOM|8| Initialize game with automated player
 |SINGLEGAMEWITHAUTOM|9
 
+### Get Civilization data, get list of all games
+This CivRest API call return in JSON format a list of all games registered. 
+| Info | Content
+| -- | -- |
+| URL | /civdata
+| Request type | GET
+| URL Params | what=3, obligatory
+| URL Params | can be ignored
+| Success response | 200
+| Response data | List of games in JSON format
+| Error response | Any other
+| Sample call | curl -X GET "http://localhost:8000/rest/civdata?what=3"
+
+Sample output:
+```JSON
+[{"gameid":15,"civ":["China","Rome"],"createtime":1578832530775,"accesstime":1578833170421,"phase":"StartOfTurn","round":0,"endofgame":null},
+
+{"gameid":14,"civ":["China","Rome"],"createtime":1578832423848,"accesstime":1578832519249,"phase":"StartOfTurn","round":0,"endofgame":null}
+
+]
+```
+
+Output description
+* gameid, the unique game identifier
+* civ, the list of civilizations involved, single element in case of training game
+* createtime, timestamp when data was created
+* accesstime, timestamp when the game was played the last time
+* phase, the phase of the game
+* round, the round number
+* endofgame, if not null, the game is completed
+
 ### Get Civilization data, start two players game with automated player
 This CivRest API call initializes two players game and the oponent is automated player. The parameter specifies the civilizations engaged in the game. This call returns the first player token. The game id is cached in the CivilizationREST and can be extracted by "Automated player, get game id".
 
