@@ -145,8 +145,7 @@ public class CivRestServices {
             } catch (Exception e) {
                 int a = 0;
             }
-            if (res.equals("")) produceNODATAResponse(httpExchange);
-            else produceOKResponse(httpExchange, res);
+            produceOKResponse(httpExchange, res);
         }
     }
 
