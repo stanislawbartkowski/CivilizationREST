@@ -2,7 +2,9 @@
 
 ## General information
 
-It is the REST API service for Civilization Engine.<br>
+REST API service for Civilization Engine.<br>
+
+Format:<br>
 The first part of HTTP URL is always *rest*.<br>
 
 Example<br>
