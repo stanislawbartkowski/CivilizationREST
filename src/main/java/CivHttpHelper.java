@@ -6,8 +6,12 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Level;
+
 
 class CivHttpHelper {
 
@@ -143,8 +147,13 @@ class CivHttpHelper {
             if (!verifyMethod(t)) return false;
             // verify param
             // check if parameters allowed
+            values.clear();
+//            String qs = t.getRequestURI().getRawQuery();
+//            String er = URLDecoder.decode(qs, StandardCharsets.UTF_8.toString());
             if (t.getRequestURI().getQuery() != null) {
-                String[] q = t.getRequestURI().getQuery().split("&");
+                String qq = t.getRequestURI().getQuery();
+                String query = URLDecoder.decode(qq, StandardCharsets.UTF_8.toString());
+                String[] q = query.split("&");
                 for (String qline : q) {
                     String[] vv = qline.split("=");
                     String s = vv[0];
