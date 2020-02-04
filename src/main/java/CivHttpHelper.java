@@ -1,5 +1,3 @@
-import civilization.io.readdir.Param;
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -7,7 +5,6 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Level;
@@ -21,6 +18,7 @@ class CivHttpHelper {
     static final String GET = "GET";
     static final String PUT = "PUT";
     static final String DELETE = "DELETE";
+    static final String OPTIONS = "OPTIONS";
 
     private static final int HTTPOK = 200;
     static final int HTTPNODATA = 204;
@@ -115,7 +113,14 @@ class CivHttpHelper {
             params.put(paramName, new RestParam(ptype, defa));
         }
 
+        private void addCORSHeader(HttpExchange t) {
+            t.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+            t.getResponseHeaders().set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE,OPTIONS");
+            t.getResponseHeaders().set("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,Authorization");
+        }
+
         protected void produceResponse(HttpExchange t, String message, int HTTPResponse) throws IOException {
+            addCORSHeader(t);
             if ((message == null) || message.equals("")) t.sendResponseHeaders(HTTPNODATA, 0);
             else {
                 byte[] response = message.getBytes();
@@ -136,7 +141,7 @@ class CivHttpHelper {
 
         private boolean verifyMethod(HttpExchange t) throws IOException {
 
-            if (expectedMethod.equals(t.getRequestMethod())) return true;
+            if (OPTIONS.equals(t.getRequestMethod()) || expectedMethod.equals(t.getRequestMethod())) return true;
             String message = expectedMethod + " method expected, " + t.getRequestMethod() + " provided.";
             produceResponse(t, message, HTTPMETHODNOTALLOWED);
             return false;
@@ -148,8 +153,6 @@ class CivHttpHelper {
             // verify param
             // check if parameters allowed
             values.clear();
-//            String qs = t.getRequestURI().getRawQuery();
-//            String er = URLDecoder.decode(qs, StandardCharsets.UTF_8.toString());
             if (t.getRequestURI().getQuery() != null) {
                 String qq = t.getRequestURI().getQuery();
                 String query = URLDecoder.decode(qq, StandardCharsets.UTF_8.toString());
@@ -203,6 +206,12 @@ class CivHttpHelper {
                 }
             }
 
+            if (OPTIONS.equals(t.getRequestMethod())) {
+                CivLogger.L.info(OPTIONS + " request");
+                produceOKResponse(t, "OK");
+                // return false, to avoid sending the content for OPTIONS
+                return false;
+            }
             return true;
         }
 
@@ -229,7 +238,6 @@ class CivHttpHelper {
         String getStringParam(String param) {
             return values.get(param).stringvalue;
         }
-
     }
 
     static void registerService(HttpServer server, RestServiceHelper service) {
