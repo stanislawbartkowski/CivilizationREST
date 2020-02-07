@@ -1,8 +1,6 @@
 <component name="libraryTable">
   <library name="CivilizationEngine">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/CivilizationEngine.jar!/" />
-    </CLASSES>
+    <CLASSES />
     <JAVADOC />
     <SOURCES />
   </library>
