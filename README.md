@@ -254,6 +254,7 @@ The server is using embedded Java HTTP Server, no additional dependency is requi
 
 ## Customize
 
+>cd CivilizationREST<br>
 > cp template/rest.rc .<br>
 
 Customize variables in rest.rc
