@@ -273,6 +273,9 @@ Customize variables in rest.rc
 
 ## Run the server
 > ./run.sh
+## Docker container
+> ./createdocker.sh<br>
+The container name is **civrest**
 ## Test
 > curl -X GET http://localhost:8000/rest/civdata?what=0<br>
 > curl -X GET "http://localhost:8000/rest/civdata?what=1&param=China"<br>
