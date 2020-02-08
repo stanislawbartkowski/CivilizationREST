@@ -17,8 +17,8 @@ public class CivRestServices {
     private static final IC II = civilization.II.factory.Factory$.MODULE$.getI();
     private static final RAccess RA = civilization.II.factory.Factory$.MODULE$.getR();
 
-    private static final String REDISHOST = "thinkde";
-    private static final int REDISPORT = 6379;
+//    private static final String REDISHOST = "thinkde";
+//    private static final int REDISPORT = 6379;
 
     // if automation engine is ready
     private static boolean automready = false;
@@ -28,7 +28,8 @@ public class CivRestServices {
 
 
     // logging
-    static {
+    static void setRedis(String REDISHOST, int REDISPORT) {
+        CivLogger.info("Redis host:" + REDISHOST + " port:" + REDISPORT);
         RA.getConn().setConnection(REDISHOST, REDISPORT, 0);
         II.setR(RA);
     }

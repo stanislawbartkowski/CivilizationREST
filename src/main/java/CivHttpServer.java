@@ -7,10 +7,24 @@ import com.sun.net.httpserver.HttpServer;
  */
 public class CivHttpServer {
 
+    private static void P(String s) {
+        System.out.println(s);
+    }
 
-    private static int PORT = 8000;
+    private static void printhelp() {
+        P("Usage: java ..  CivHttpServer /port/ /redishost/ /redisport/");
+        P("  /port/ : port number CivRestServer is listening");
+        P("  /redishost/ : Redis host name");
+        P("  /redispost/ : Redis port");
+    }
 
     public static void main(String[] args) throws Exception {
+        if (args.length != 3) {
+            printhelp();
+            System.exit(4);
+        }
+        CivRestServices.setRedis(args[1], Integer.parseInt(args[2]));
+        int PORT = Integer.parseInt(args[0]);
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
         CivLogger.info("Start CivRest HTTP Server, listening on port " + PORT);
         CivHttpHelper.registerService(server, new CivRestServices.ServiceRegisterAutom());
