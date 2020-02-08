@@ -248,4 +248,6 @@ This call deploys the game board in JSON format and creates a new game.
 | Sample call | curl -X POST "http://localhost:8000/rest/deploygame?civ=China" -d /< JSON \>"
 
 # Standalone server
-The server is using embedded Java [HTTPServer] (https://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/HttpServer.html)
+https://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/HttpServer.html 
+The server is using embedded Java HTTP Server, no additional dependency is required.
+* git clone 
