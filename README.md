@@ -250,4 +250,7 @@ This call deploys the game board in JSON format and creates a new game.
 # Standalone server
 https://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/HttpServer.html 
 The server is using embedded Java HTTP Server, no additional dependency is required.
-* git clone 
+* git clone https://github.com/stanislawbartkowski/CivilizationREST.git
+* cd CivilizationREST
+* ./mvndeploy.sh
+* mvn package
