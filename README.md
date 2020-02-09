@@ -52,7 +52,7 @@ The following data (*what* parameter) are possible.
 
 | Id |  Number | Content
 | -- | -- | -- | 
-|LISTOFRES | 0 | List of resources
+|LISTOFRES | 0 | List of resources<br>https://github.com/stanislawbartkowski/CivilizationEngine/wiki/GameObjects#resource-description
 |REGISTEROWNER | 1|
 |GETBOARD | 2 | Current board in JSON formar
 |GETGAMES|3 |
