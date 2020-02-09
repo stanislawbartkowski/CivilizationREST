@@ -55,7 +55,7 @@ The following data (*what* parameter) are possible.
 |LISTOFRES | 0 | List of resources<br>https://github.com/stanislawbartkowski/CivilizationEngine/wiki/GameObjects#resource-description
 |REGISTEROWNER | 1|
 |GETBOARD | 2 | Current board in JSON formar
-|GETGAMES|3 |
+|GETGAMES|3 | Get list of pending games ready to be resumed<br>https://github.com/stanislawbartkowski/CivilizationREST/blob/master/README.md#get-civilization-data-get-list-of-all-games
 |UNREGISTERTOKEN|4| Unregister token, end of the game
 |WAITINGGAMES|5| List of games in waiting
 |TWOPLAYERSGAME|6| Initialize two players game, human to human
