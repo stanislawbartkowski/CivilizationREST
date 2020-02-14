@@ -12,13 +12,13 @@ import java.util.logging.Level;
 import civilization.II.interfaces.IC;
 import civilization.II.interfaces.RAccess;
 
+import com.rest.restservice.RestHelper;
+
+
 public class CivRestServices {
 
     private static final IC II = civilization.II.factory.Factory$.MODULE$.getI();
     private static final RAccess RA = civilization.II.factory.Factory$.MODULE$.getR();
-
-//    private static final String REDISHOST = "thinkde";
-//    private static final int REDISPORT = 6379;
 
     // if automation engine is ready
     private static boolean automready = false;
@@ -54,13 +54,13 @@ public class CivRestServices {
         return a[0];
     }
 
-    static class ServiceRegisterAutom extends CivHttpHelper.RestServiceHelper {
+    static class ServiceRegisterAutom extends CivHttpHelper {
 
         private final static String AUTOM = "autom";
 
         ServiceRegisterAutom() {
-            super("registerautom", CivHttpHelper.PUT);
-            addParam(AUTOM, CivHttpHelper.PARAMTYPE.BOOLEAN);
+            super("registerautom", RestHelper.PUT);
+            addParam(AUTOM, RestHelper.PARAMTYPE.BOOLEAN);
         }
 
         @Override
@@ -69,11 +69,11 @@ public class CivRestServices {
             automready = getLogParam(AUTOM);
             CivLogger.info("Automated player registered.");
             // return NODATA, OK here
-            produceResponse(httpExchange, "", CivHttpHelper.HTTPNODATA);
+            produceResponse(httpExchange, "", RestHelper.HTTPNODATA);
         }
     }
 
-    static class ServiceCivData extends CivHttpHelper.RestServiceHelper {
+    static class ServiceCivData extends CivHttpHelper {
 
         private final static String WHAT = "what";
         private final static String PARAM = "param";
@@ -90,9 +90,9 @@ public class CivRestServices {
         private final int SINGLEGAMEWITHAUTOM = 9;
 
         ServiceCivData() {
-            super("civdata", CivHttpHelper.GET);
-            addParam(WHAT, CivHttpHelper.PARAMTYPE.INT);
-            addParam(PARAM, CivHttpHelper.PARAMTYPE.STRING, new CivHttpHelper.ParamValue(""));
+            super("civdata", RestHelper.GET);
+            addParam(WHAT, RestHelper.PARAMTYPE.INT);
+            addParam(PARAM, RestHelper.PARAMTYPE.STRING, new RestHelper.ParamValue(""));
         }
 
         @Override
@@ -100,7 +100,7 @@ public class CivRestServices {
             // do action
             int what = getIntParam(WHAT);
             if (what < 0 || what > 9) {
-                produceResponse(httpExchange, "Parameter what " + what + " is expected between 0 and 0", CivHttpHelper.HTTPBADREQUEST);
+                produceResponse(httpExchange, "Parameter what " + what + " is expected between 0 and 0", RestHelper.HTTPBADREQUEST);
                 return;
             }
             String param = getStringParam(PARAM);
@@ -150,15 +150,15 @@ public class CivRestServices {
         }
     }
 
-    static class ServiceJoinGame extends CivHttpHelper.RestServiceHelper {
+    static class ServiceJoinGame extends CivHttpHelper {
 
         private final static String GAMEID = "gameid";
         private final static String CIV = "civ";
 
         ServiceJoinGame() {
-            super("joingame", CivHttpHelper.POST);
-            addParam(GAMEID, CivHttpHelper.PARAMTYPE.INT);
-            addParam(CIV, CivHttpHelper.PARAMTYPE.STRING);
+            super("joingame", RestHelper.POST);
+            addParam(GAMEID, RestHelper.PARAMTYPE.INT);
+            addParam(CIV, RestHelper.PARAMTYPE.STRING);
         }
 
         @Override
@@ -170,10 +170,10 @@ public class CivRestServices {
         }
     }
 
-    static class GetWaitingGame extends CivHttpHelper.RestServiceHelper {
+    static class GetWaitingGame extends CivHttpHelper {
 
         GetWaitingGame() {
-            super("getwaiting", CivHttpHelper.GET);
+            super("getwaiting", RestHelper.GET);
         }
 
         @Override
@@ -188,15 +188,15 @@ public class CivRestServices {
 
     }
 
-    static class ServiceItemizeCommand extends CivHttpHelper.RestServiceHelper {
+    static class ServiceItemizeCommand extends CivHttpHelper {
 
         private final static String TOKEN = "token";
         private final static String COMMAND = "command";
 
         ServiceItemizeCommand() {
-            super("itemize", CivHttpHelper.GET);
-            addParam(TOKEN, CivHttpHelper.PARAMTYPE.STRING);
-            addParam(COMMAND, CivHttpHelper.PARAMTYPE.STRING);
+            super("itemize", RestHelper.GET);
+            addParam(TOKEN, RestHelper.PARAMTYPE.STRING);
+            addParam(COMMAND, RestHelper.PARAMTYPE.STRING);
         }
 
         @Override
@@ -208,7 +208,7 @@ public class CivRestServices {
         }
     }
 
-    static class ServiceExecuteCommand extends CivHttpHelper.RestServiceHelper {
+    static class ServiceExecuteCommand extends CivHttpHelper {
 
         private final static String TOKEN = "token";
         private final static String ACTION = "action";
@@ -217,12 +217,12 @@ public class CivRestServices {
         private final static String JSPARAM = "jsparam";
 
         ServiceExecuteCommand() {
-            super("command", CivHttpHelper.POST);
-            addParam(TOKEN, CivHttpHelper.PARAMTYPE.STRING);
-            addParam(ACTION, CivHttpHelper.PARAMTYPE.STRING);
-            addParam(ROW, CivHttpHelper.PARAMTYPE.INT);
-            addParam(COL, CivHttpHelper.PARAMTYPE.INT);
-            addParam(JSPARAM, CivHttpHelper.PARAMTYPE.STRING, new CivHttpHelper.ParamValue(null));
+            super("command", RestHelper.POST);
+            addParam(TOKEN, RestHelper.PARAMTYPE.STRING);
+            addParam(ACTION, RestHelper.PARAMTYPE.STRING);
+            addParam(ROW, RestHelper.PARAMTYPE.INT);
+            addParam(COL, RestHelper.PARAMTYPE.INT);
+            addParam(JSPARAM, RestHelper.PARAMTYPE.STRING, new RestHelper.ParamValue(null));
         }
 
         @Override
@@ -238,13 +238,13 @@ public class CivRestServices {
 
     }
 
-    static class ServiceDeleteGame extends CivHttpHelper.RestServiceHelper {
+    static class ServiceDeleteGame extends CivHttpHelper {
 
         private final static String GAMEID = "gameid";
 
         ServiceDeleteGame() {
-            super("delete", CivHttpHelper.DELETE);
-            addParam(GAMEID, CivHttpHelper.PARAMTYPE.INT);
+            super("delete", RestHelper.DELETE);
+            addParam(GAMEID, RestHelper.PARAMTYPE.INT);
         }
 
         @Override
@@ -255,11 +255,11 @@ public class CivRestServices {
         }
     }
 
-    static class ServiceClearWaiting extends CivHttpHelper.RestServiceHelper {
+    static class ServiceClearWaiting extends CivHttpHelper {
 
 
         ServiceClearWaiting() {
-            super("clearwaitinglist", CivHttpHelper.POST);
+            super("clearwaitinglist", RestHelper.POST);
         }
 
         @Override
@@ -269,13 +269,13 @@ public class CivRestServices {
         }
     }
 
-    static class ServiceAllReady extends CivHttpHelper.RestServiceHelper {
+    static class ServiceAllReady extends CivHttpHelper {
 
         private final static String TOKEN = "token";
 
         ServiceAllReady() {
-            super("allready", CivHttpHelper.GET);
-            addParam(TOKEN, CivHttpHelper.PARAMTYPE.STRING);
+            super("allready", RestHelper.GET);
+            addParam(TOKEN, RestHelper.PARAMTYPE.STRING);
         }
 
         @Override
@@ -286,13 +286,13 @@ public class CivRestServices {
         }
     }
 
-    static class ServiceDeployGame extends CivHttpHelper.RestServiceHelper {
+    static class ServiceDeployGame extends CivHttpHelper {
 
         private final static String CIV = "civ";
 
         ServiceDeployGame() {
-            super("deploygame", CivHttpHelper.POST);
-            addParam(CIV, CivHttpHelper.PARAMTYPE.STRING);
+            super("deploygame", RestHelper.POST);
+            addParam(CIV, RestHelper.PARAMTYPE.STRING);
         }
 
         @Override

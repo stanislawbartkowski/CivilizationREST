@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="CivRestHTTP" />
+        <module name="RestService" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="CivRestHTTP" target="1.8" />
+      <module name="RestService" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>

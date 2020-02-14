@@ -1,11 +1,13 @@
-import java.net.InetSocketAddress;
-
 import com.sun.net.httpserver.HttpServer;
+
+import com.rest.restservice.RestStart;
+import com.rest.restservice.RestHelper;
+
 
 /*
  * a simple static http server
  */
-public class CivHttpServer {
+public class CivHttpServer extends RestStart {
 
     private static void P(String s) {
         System.out.println(s);
@@ -18,6 +20,20 @@ public class CivHttpServer {
         P("  /redispost/ : Redis port");
     }
 
+    static void registerServices(HttpServer server) {
+        RestHelper.registerService(server, new CivRestServices.ServiceRegisterAutom());
+        RestHelper.registerService(server, new CivRestServices.ServiceCivData());
+        RestHelper.registerService(server, new CivRestServices.GetWaitingGame());
+        RestHelper.registerService(server, new CivRestServices.ServiceJoinGame());
+        RestHelper.registerService(server, new CivRestServices.ServiceItemizeCommand());
+        RestHelper.registerService(server, new CivRestServices.ServiceExecuteCommand());
+        RestHelper.registerService(server, new CivRestServices.ServiceDeleteGame());
+        RestHelper.registerService(server, new CivRestServices.ServiceClearWaiting());
+        RestHelper.registerService(server, new CivRestServices.ServiceAllReady());
+        RestHelper.registerService(server, new CivRestServices.ServiceDeployGame());
+    }
+
+
     public static void main(String[] args) throws Exception {
         if (args.length != 3) {
             printhelp();
@@ -25,20 +41,7 @@ public class CivHttpServer {
         }
         CivRestServices.setRedis(args[1], Integer.parseInt(args[2]));
         int PORT = Integer.parseInt(args[0]);
-        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
-        CivLogger.info("Start CivRest HTTP Server, listening on port " + PORT);
-        CivHttpHelper.registerService(server, new CivRestServices.ServiceRegisterAutom());
-        CivHttpHelper.registerService(server, new CivRestServices.ServiceCivData());
-        CivHttpHelper.registerService(server, new CivRestServices.GetWaitingGame());
-        CivHttpHelper.registerService(server, new CivRestServices.ServiceJoinGame());
-        CivHttpHelper.registerService(server, new CivRestServices.ServiceItemizeCommand());
-        CivHttpHelper.registerService(server, new CivRestServices.ServiceExecuteCommand());
-        CivHttpHelper.registerService(server, new CivRestServices.ServiceDeleteGame());
-        CivHttpHelper.registerService(server, new CivRestServices.ServiceClearWaiting());
-        CivHttpHelper.registerService(server, new CivRestServices.ServiceAllReady());
-        CivHttpHelper.registerService(server, new CivRestServices.ServiceDeployGame());
-        server.setExecutor(null); // creates a default executor
-        server.start();
+        RestStart(PORT, CivHttpServer::registerServices);
     }
 
 }
