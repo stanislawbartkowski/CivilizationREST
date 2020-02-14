@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CivRestHTTP.iml" filepath="$PROJECT_DIR$/CivRestHTTP.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../RestService/RestService.iml" filepath="$PROJECT_DIR$/../RestService/RestService.iml" />
     </modules>
   </component>
 </project>
