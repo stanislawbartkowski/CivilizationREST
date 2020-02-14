@@ -44,6 +44,12 @@
             <artifactId>CivilizationEngine</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.civlizationengine</groupId>
+            <artifactId>RestService</artifactId>
+            <version>1.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
