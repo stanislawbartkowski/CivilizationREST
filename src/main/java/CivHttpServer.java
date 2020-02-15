@@ -3,7 +3,6 @@ import com.sun.net.httpserver.HttpServer;
 import com.rest.restservice.RestStart;
 import com.rest.restservice.RestHelper;
 
-
 /*
  * a simple static http server
  */

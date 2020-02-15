@@ -12,4 +12,8 @@ public class CivLogger {
 //        L.log(Level.FINE,s);
         info(s);
     }
+
+    public static void error(String s, Exception e) {
+        L.log(Level.SEVERE,s,e);
+    }
 }

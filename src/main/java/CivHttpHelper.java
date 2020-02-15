@@ -8,13 +8,18 @@ import com.rest.restservice.RestHelper;
 
 abstract class CivHttpHelper extends RestHelper.RestServiceHelper {
 
-    protected CivHttpHelper(String url, String expectedMethod) {
-        super(url, expectedMethod);
+    protected CivHttpHelper(String url, String expectedMethod, boolean tokenexpected) {
+        super(url, expectedMethod,tokenexpected);
     }
+
+    protected CivHttpHelper(String url, String expectedMethod) {
+        super(url, expectedMethod,false);
+    }
+
 
     protected String extractAutomatedToken(HttpExchange t, boolean automready, List<String> waitinglist, String s) throws IOException {
         if (!automready) {
-            produceResponse(t, "Cannot run automated player, not registered", RestHelper.HTTPBADREQUEST);
+            produceResponse(t, Optional.of("Cannot run automated player, not registered"), RestHelper.HTTPBADREQUEST);
             return null;
         }
         String a[] = s.split(",");

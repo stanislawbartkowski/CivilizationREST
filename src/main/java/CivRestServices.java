@@ -5,8 +5,8 @@ import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.logging.Level;
 
 import civilization.II.interfaces.IC;
@@ -64,12 +64,12 @@ public class CivRestServices {
         }
 
         @Override
-        public void servicehandle(HttpExchange httpExchange) throws IOException {
+        public void servicehandle(HttpExchange httpExchange, RestHelper.IQeuryInterface v) throws IOException {
             // do action
-            automready = getLogParam(AUTOM);
+            automready = getLogParam(v, AUTOM);
             CivLogger.info("Automated player registered.");
             // return NODATA, OK here
-            produceResponse(httpExchange, "", RestHelper.HTTPNODATA);
+            produceNODATAResponse(httpExchange);
         }
     }
 
@@ -78,16 +78,34 @@ public class CivRestServices {
         private final static String WHAT = "what";
         private final static String PARAM = "param";
 
-        private final int LISTOFRES = 0;
-        private final int REGISTEROWNER = 1;
-        private final int GETBOARD = 2;
-        private final int GETGAMES = 3;
-        private final int UNREGISTERTOKEN = 4;
-        private final int WAITINGGAMES = 5;
-        private final int TWOPLAYERSGAME = 6;
-        private final int GETJOURNAL = 7;
-        private final int TWOPLAYERSGAMEWITHAUTOM = 8;
-        private final int SINGLEGAMEWITHAUTOM = 9;
+        private final static int LISTOFRES = 0;
+        private final static int REGISTEROWNER = 1;
+        private final static int GETBOARD = 2;
+        private final static int GETGAMES = 3;
+        private final static int UNREGISTERTOKEN = 4;
+        private final static int WAITINGGAMES = 5;
+        private final static int TWOPLAYERSGAME = 6;
+        private final static int GETJOURNAL = 7;
+        private final static int TWOPLAYERSGAMEWITHAUTOM = 8;
+        private final static int SINGLEGAMEWITHAUTOM = 9;
+
+        private final static Set<Integer> paramexpected = new HashSet<Integer>();
+        private final static Set<Integer> tokenexpected = new HashSet<Integer>();
+
+
+        static {
+            paramexpected.add(REGISTEROWNER);
+            paramexpected.add(TWOPLAYERSGAME);
+            paramexpected.add(TWOPLAYERSGAMEWITHAUTOM);
+            paramexpected.add(SINGLEGAMEWITHAUTOM);
+
+            tokenexpected.add(GETBOARD);
+            tokenexpected.add(UNREGISTERTOKEN);
+            tokenexpected.add(GETJOURNAL);
+        }
+
+
+        private final int LASTWHAT = 9;
 
         ServiceCivData() {
             super("civdata", RestHelper.GET);
@@ -96,14 +114,24 @@ public class CivRestServices {
         }
 
         @Override
-        public void servicehandle(HttpExchange httpExchange) throws IOException {
+        public void servicehandle(HttpExchange httpExchange, RestHelper.IQeuryInterface v) throws IOException {
             // do action
-            int what = getIntParam(WHAT);
-            if (what < 0 || what > 9) {
-                produceResponse(httpExchange, "Parameter what " + what + " is expected between 0 and 0", RestHelper.HTTPBADREQUEST);
+            int what = getIntParam(v, WHAT);
+            if (what < LISTOFRES || what > LASTWHAT) {
+                produceResponse(httpExchange, Optional.of("Parameter what " + what + " is expected between " + LISTOFRES + " and " + LASTWHAT), RestHelper.HTTPBADREQUEST);
                 return;
             }
-            String param = getStringParam(PARAM);
+            String param = null;
+            if (tokenexpected.contains(what)) {
+                Optional<String> token = getAuthorizationToken(httpExchange, true);
+                if (!token.isPresent()) return;
+                param = token.get();
+            }
+            if (paramexpected.contains(what)) {
+                Optional<String> s = getStringParamExpected(httpExchange, v, PARAM);
+                if (!s.isPresent()) return;
+                param = s.get();
+            }
             String res = null;
             CivLogger.info("Get data " + what);
             int w = -1;
@@ -144,7 +172,7 @@ public class CivRestServices {
             try {
                 if (res == null) res = II.getData(w, param, null);
             } catch (Exception e) {
-                int a = 0;
+                CivLogger.error("Error thrown from Civilization Engine", e);
             }
             produceOKResponse(httpExchange, res);
         }
@@ -162,11 +190,11 @@ public class CivRestServices {
         }
 
         @Override
-        public void servicehandle(HttpExchange httpExchange) throws IOException {
-            int gameid = getIntParam(GAMEID);
-            String civ = getStringParam(CIV);
+        public void servicehandle(HttpExchange httpExchange, RestHelper.IQeuryInterface v) throws IOException {
+            int gameid = getIntParam(v, GAMEID);
+            String civ = getStringParam(v, CIV);
             String token = II.joinGame(gameid, civ);
-            produceOKResponse(httpExchange, token);
+            produceOKResponse(httpExchange, Optional.of(token));
         }
     }
 
@@ -177,48 +205,44 @@ public class CivRestServices {
         }
 
         @Override
-        public void servicehandle(HttpExchange httpExchange) throws IOException {
+        public void servicehandle(HttpExchange httpExchange, RestHelper.IQeuryInterface v) throws IOException {
             String gameid = "";
             if (!waitinglist.isEmpty()) {
                 gameid = waitinglist.get(0);
                 waitinglist.remove(0);
             }
-            produceOKResponse(httpExchange, gameid);
+            produceOKResponse(httpExchange, Optional.of(gameid));
         }
 
     }
 
     static class ServiceItemizeCommand extends CivHttpHelper {
 
-        private final static String TOKEN = "token";
         private final static String COMMAND = "command";
 
         ServiceItemizeCommand() {
-            super("itemize", RestHelper.GET);
-            addParam(TOKEN, RestHelper.PARAMTYPE.STRING);
+            super("itemize", RestHelper.GET, true);
             addParam(COMMAND, RestHelper.PARAMTYPE.STRING);
         }
 
         @Override
-        public void servicehandle(HttpExchange httpExchange) throws IOException {
-            String token = getStringParam(TOKEN);
-            String command = getStringParam(COMMAND);
+        public void servicehandle(HttpExchange httpExchange, RestHelper.IQeuryInterface v) throws IOException {
+            String token = getAuthorizationToken(httpExchange).get();
+            String command = getStringParam(v, COMMAND);
             String res = II.itemizeCommand(token, command);
-            produceOKResponse(httpExchange, res);
+            produceOKResponse(httpExchange, Optional.of(res));
         }
     }
 
     static class ServiceExecuteCommand extends CivHttpHelper {
 
-        private final static String TOKEN = "token";
         private final static String ACTION = "action";
         private final static String ROW = "row";
         private final static String COL = "col";
         private final static String JSPARAM = "jsparam";
 
         ServiceExecuteCommand() {
-            super("command", RestHelper.POST);
-            addParam(TOKEN, RestHelper.PARAMTYPE.STRING);
+            super("command", RestHelper.POST, true);
             addParam(ACTION, RestHelper.PARAMTYPE.STRING);
             addParam(ROW, RestHelper.PARAMTYPE.INT);
             addParam(COL, RestHelper.PARAMTYPE.INT);
@@ -226,12 +250,12 @@ public class CivRestServices {
         }
 
         @Override
-        public void servicehandle(HttpExchange httpExchange) throws IOException {
-            String token = getStringParam(TOKEN);
-            String action = getStringParam(ACTION);
-            int row = getIntParam(ROW);
-            int col = getIntParam(COL);
-            String jsparam = getStringParam(JSPARAM);
+        public void servicehandle(HttpExchange httpExchange, RestHelper.IQeuryInterface v) throws IOException {
+            String token = getAuthorizationToken(httpExchange).get();
+            String action = getStringParam(v, ACTION);
+            int row = getIntParam(v, ROW);
+            int col = getIntParam(v, COL);
+            String jsparam = getStringParam(v, JSPARAM);
             String res = II.executeCommand(token, action, row, col, jsparam);
             produceOKResponse(httpExchange, res);
         }
@@ -248,8 +272,8 @@ public class CivRestServices {
         }
 
         @Override
-        public void servicehandle(HttpExchange httpExchange) throws IOException {
-            int gameid = getIntParam(GAMEID);
+        public void servicehandle(HttpExchange httpExchange, RestHelper.IQeuryInterface v) throws IOException {
+            int gameid = getIntParam(v, GAMEID);
             II.deleteGame(gameid);
             produceNODATAResponse(httpExchange);
         }
@@ -263,7 +287,7 @@ public class CivRestServices {
         }
 
         @Override
-        public void servicehandle(HttpExchange httpExchange) throws IOException {
+        public void servicehandle(HttpExchange httpExchange, RestHelper.IQeuryInterface v) throws IOException {
             waitinglist.clear();
             produceNODATAResponse(httpExchange);
         }
@@ -271,18 +295,15 @@ public class CivRestServices {
 
     static class ServiceAllReady extends CivHttpHelper {
 
-        private final static String TOKEN = "token";
-
         ServiceAllReady() {
-            super("allready", RestHelper.GET);
-            addParam(TOKEN, RestHelper.PARAMTYPE.STRING);
+            super("allready", RestHelper.GET, true);
         }
 
         @Override
-        public void servicehandle(HttpExchange httpExchange) throws IOException {
-            String token = getStringParam(TOKEN);
+        public void servicehandle(HttpExchange httpExchange, RestHelper.IQeuryInterface v) throws IOException {
+            String token = getAuthorizationToken(httpExchange).get();
             boolean res = II.allPlayersReady(token);
-            produceOKResponse(httpExchange, Boolean.toString(res));
+            produceOKResponse(httpExchange, Optional.of(Boolean.toString(res)));
         }
     }
 
@@ -296,8 +317,8 @@ public class CivRestServices {
         }
 
         @Override
-        public void servicehandle(HttpExchange httpExchange) throws IOException {
-            String civs = getStringParam(CIV);
+        public void servicehandle(HttpExchange httpExchange, RestHelper.IQeuryInterface v) throws IOException {
+            String civs = getStringParam(v, CIV);
             InputStream is = httpExchange.getRequestBody();
             String board = toS(is);
             String res = II.readPlayerGameS(board, civs);
