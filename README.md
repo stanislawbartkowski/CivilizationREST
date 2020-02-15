@@ -53,7 +53,7 @@ The following data (*what* parameter) are possible.
 | Id |  Number | Content
 | -- | -- | -- | 
 |LISTOFRES | 0 | List of resources<br>https://github.com/stanislawbartkowski/CivilizationEngine/wiki/GameObjects#resource-description
-|REGISTEROWNER | 1|
+|REGISTEROWNER | 1| Initialize new single player, training game
 |GETBOARD | 2 | Current board in JSON formar
 |GETGAMES|3 | Get list of pending games ready to be resumed<br>https://github.com/stanislawbartkowski/CivilizationREST/blob/master/README.md#get-civilization-data-get-list-of-all-games
 |UNREGISTERTOKEN|4| Unregister token, end of the game
@@ -62,6 +62,19 @@ The following data (*what* parameter) are possible.
 |GETJOURNAL|7|Get the player journal
 |TWOPLAYERSGAMEWITHAUTOM|8| Initialize game with automated player
 |SINGLEGAMEWITHAUTOM|9
+
+### Initialize single player, training game
+This CivRest API call return in JSON format a list of all games registered. 
+| Info | Content
+| -- | -- |
+| URL | /civdata
+| Request type | GET
+| URL Params | what=0, obligatory
+| URL Params | Civilization name to start with
+| Success response | 200
+| Response data | Token
+| Error response | Any other
+| Sample call | curl -X GET "http://localhost:8000/rest/civdata?what=1&param=China"
 
 ### Get Civilization data, get list of all games
 This CivRest API call return in JSON format a list of all games registered. 
