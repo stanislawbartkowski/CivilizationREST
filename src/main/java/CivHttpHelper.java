@@ -10,7 +10,12 @@ import com.rest.restservice.RestHelper;
 abstract class CivHttpHelper extends RestHelper.RestServiceHelper {
 
     private final static String REST = "rest/";
-    private final boolean crossAllowed = false;
+
+    private static boolean crossAllowed = false;
+
+    static void setCrossAllowed(boolean crossAllowed) {
+        CivHttpHelper.crossAllowed = crossAllowed;
+    }
 
     protected CivHttpHelper(String url, boolean tokenexpected) {
         super(REST + url, tokenexpected);
