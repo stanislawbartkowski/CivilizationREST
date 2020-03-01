@@ -226,11 +226,26 @@ This call deletes the game identified by *gameid*. The game is not available any
 | -- | -- |
 | URL | /delete
 | Request type | DELETE
-| URL Params | gameid, integer, obligator, the identifier of the game to remove
+| URL Params | gameid, integer, obligatory, the identifier of the game to remove
 | Success response | 204
 | Response data | nothing
 | Error response | Any other. The call does not report any error if the game does not exist.
 | Sample call | curl -X DELETE "http://localhost:8000/rest/delete?gameid=5"
+
+## Resume the game
+
+The call resume existing game and returns a new token for player. 
+
+| Info | Content
+| -- | -- |
+| URL | /resumegame
+| Request type | GET
+| URL Params | gameid, integer, obligatory, the identifier of the game to remove
+| URL Params | civ, string, obligatory, the civilization to play after resuming. The game can be two-players game and the player can choose the civilization to start with. For single player game, the civilization name
+| Success response | 200
+| Response data | token, gameid
+| Error response | Any other. The call does not report any error if the game does not exist.
+| Sample call | curl -X DELETE "http://localhost:8000/rest/resumegame?gameid=5,civ=China"
 
 ## Clear the waiting for automated player list.
 
