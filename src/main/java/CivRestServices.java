@@ -1,3 +1,16 @@
+/*
+ * Copyright 2020 stanislawbartkowski@gmail.com
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.rest.restservice.PARAMTYPE;
@@ -8,7 +21,6 @@ import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -16,39 +28,31 @@ import civilization.II.interfaces.IC;
 import civilization.II.interfaces.RAccess;
 
 import com.rest.restservice.RestHelper;
+import com.sun.net.httpserver.HttpServer;
 
+class CivRestServices {
 
-public class CivRestServices {
-
-    private static final IC II = civilization.II.factory.Factory$.MODULE$.getI();
-    private static final RAccess RA = civilization.II.factory.Factory$.MODULE$.getR();
+    private final IC II = civilization.II.factory.Factory$.MODULE$.getI();
+    private final RAccess RA = civilization.II.factory.Factory$.MODULE$.getR();
 
     // if automation engine is ready
-    private static boolean automready = false;
+    private boolean automready = false;
 
     // list if games waiting for automation
-    private static final List<String> waitinglist = new ArrayList<String>();
+    private final List<String> waitinglist = new ArrayList<String>();
 
+    // common parameters name
+    private final static String CIV = "civ";
+    private final static String GAMEID = "gameid";
 
     // logging
-    static void setRedis(String REDISHOST, int REDISPORT) {
+    void setRedis(String REDISHOST, int REDISPORT) {
         CivLogger.info("Redis host:" + REDISHOST + " port:" + REDISPORT);
         RA.getConn().setConnection(REDISHOST, REDISPORT, 0);
         II.setR(RA);
     }
 
-    private static String toS(InputStream i) {
-        String result;
-        try {
-            result = CharStreams.toString(new InputStreamReader(i, Charsets.UTF_8));
-            return result;
-        } catch (IOException e) {
-            CivLogger.L.log(Level.SEVERE, "Error while reading the game boardd", e);
-            return null;
-        }
-    }
-
-    private static String extractAutomatedToken(String s) {
+    private String extractAutomatedToken(String s) {
         if (!automready)
             throw new RuntimeException("Cannot run automated player, not registered");
         String a[] = s.split(",");
@@ -57,7 +61,7 @@ public class CivRestServices {
         return a[0];
     }
 
-    static class ServiceRegisterAutom extends CivHttpHelper {
+    class ServiceRegisterAutom extends CivHttpHelper {
 
         private final static String AUTOM = "autom";
 
@@ -67,7 +71,7 @@ public class CivRestServices {
 
         @Override
         public RestParams getParams(HttpExchange httpExchange) throws IOException {
-            RestParams par = produceRestParam(RestHelper.PUT,Optional.empty());
+            RestParams par = produceRestParam(RestHelper.PUT, Optional.empty());
             par.addParam(AUTOM, PARAMTYPE.BOOLEAN);
             return par;
         }
@@ -82,7 +86,7 @@ public class CivRestServices {
         }
     }
 
-    static class ServiceCivData extends CivHttpHelper {
+    class ServiceCivData extends CivHttpHelper {
 
         private final static String WHAT = "what";
         private final static String PARAM = "param";
@@ -98,11 +102,11 @@ public class CivRestServices {
         private final static int TWOPLAYERSGAMEWITHAUTOM = 8;
         private final static int SINGLEGAMEWITHAUTOM = 9;
 
-        private final static Set<Integer> paramexpected = new HashSet<Integer>();
-        private final static Set<Integer> tokenexpected = new HashSet<Integer>();
+        private final Set<Integer> paramexpected = new HashSet<Integer>();
+        private final Set<Integer> tokenexpected = new HashSet<Integer>();
 
 
-        static {
+        private void init() {
             paramexpected.add(REGISTEROWNER);
             paramexpected.add(TWOPLAYERSGAME);
             paramexpected.add(TWOPLAYERSGAMEWITHAUTOM);
@@ -118,11 +122,12 @@ public class CivRestServices {
 
         ServiceCivData() {
             super("civdata");
+            init();
         }
 
         @Override
         public RestParams getParams(HttpExchange httpExchange) throws IOException {
-            RestParams par = produceRestParam(RestHelper.GET,Optional.of(RestParams.CONTENT.JSON));
+            RestParams par = produceRestParam(RestHelper.GET, Optional.of(RestParams.CONTENT.JSON));
             par.addParam(WHAT, PARAMTYPE.INT);
             par.addParam(PARAM, PARAMTYPE.STRING, new ParamValue(""));
             return par;
@@ -194,10 +199,7 @@ public class CivRestServices {
         }
     }
 
-    static class ServiceJoinGame extends CivHttpHelper {
-
-        private final static String GAMEID = "gameid";
-        private final static String CIV = "civ";
+    class ServiceJoinGame extends CivHttpHelper {
 
         ServiceJoinGame() {
             super("joingame");
@@ -205,7 +207,7 @@ public class CivRestServices {
 
         @Override
         public RestParams getParams(HttpExchange httpExchange) throws IOException {
-            RestParams par = produceRestParam(RestHelper.POST,Optional.of(RestParams.CONTENT.TEXT));
+            RestParams par = produceRestParam(RestHelper.POST, Optional.of(RestParams.CONTENT.TEXT));
             par.addParam(GAMEID, PARAMTYPE.INT);
             par.addParam(CIV, PARAMTYPE.STRING);
             return par;
@@ -220,7 +222,7 @@ public class CivRestServices {
         }
     }
 
-    static class GetWaitingGame extends CivHttpHelper {
+    class GetWaitingGame extends CivHttpHelper {
 
         GetWaitingGame() {
             super("getwaiting");
@@ -238,14 +240,14 @@ public class CivRestServices {
 
         @Override
         public RestParams getParams(HttpExchange httpExchange) throws IOException {
-            RestParams par = produceRestParam(RestHelper.GET,Optional.of(RestParams.CONTENT.JSON));
+            RestParams par = produceRestParam(RestHelper.GET, Optional.of(RestParams.CONTENT.JSON));
             return par;
         }
 
 
     }
 
-    static class ServiceItemizeCommand extends CivHttpHelper {
+    class ServiceItemizeCommand extends CivHttpHelper {
 
         private final static String COMMAND = "command";
 
@@ -255,7 +257,7 @@ public class CivRestServices {
 
         @Override
         public RestParams getParams(HttpExchange httpExchange) throws IOException {
-            RestParams par = produceRestParam(RestHelper.GET,Optional.of(RestParams.CONTENT.JSON));
+            RestParams par = produceRestParam(RestHelper.GET, Optional.of(RestParams.CONTENT.JSON));
             par.addParam(COMMAND, PARAMTYPE.STRING);
             return par;
         }
@@ -270,7 +272,7 @@ public class CivRestServices {
         }
     }
 
-    static class ServiceExecuteCommand extends CivHttpHelper {
+    class ServiceExecuteCommand extends CivHttpHelper {
 
         private final static String ACTION = "action";
         private final static String ROW = "row";
@@ -283,7 +285,7 @@ public class CivRestServices {
 
         @Override
         public RestParams getParams(HttpExchange httpExchange) throws IOException {
-            RestParams par = produceRestParam(RestHelper.POST,Optional.of(RestParams.CONTENT.TEXT));
+            RestParams par = produceRestParam(RestHelper.POST, Optional.of(RestParams.CONTENT.TEXT));
             par.addParam(ACTION, PARAMTYPE.STRING);
             par.addParam(ROW, PARAMTYPE.INT);
             par.addParam(COL, PARAMTYPE.INT);
@@ -305,7 +307,7 @@ public class CivRestServices {
 
     }
 
-    static class ServiceDeleteGame extends CivHttpHelper {
+    class ServiceDeleteGame extends CivHttpHelper {
 
         private final static String GAMEID = "gameid";
 
@@ -315,8 +317,8 @@ public class CivRestServices {
 
         @Override
         public RestParams getParams(HttpExchange httpExchange) throws IOException {
-            RestParams par = produceRestParam(RestHelper.DELETE,Optional.empty());
-            par.addParam(GAMEID,PARAMTYPE.INT);
+            RestParams par = produceRestParam(RestHelper.DELETE, Optional.empty());
+            par.addParam(GAMEID, PARAMTYPE.INT);
             return par;
         }
 
@@ -329,8 +331,7 @@ public class CivRestServices {
         }
     }
 
-    static class ServiceClearWaiting extends CivHttpHelper {
-
+    class ServiceClearWaiting extends CivHttpHelper {
 
         ServiceClearWaiting() {
             super("clearwaitinglist");
@@ -338,7 +339,7 @@ public class CivRestServices {
 
         @Override
         public RestParams getParams(HttpExchange httpExchange) throws IOException {
-            RestParams par = produceRestParam(RestHelper.POST,Optional.empty());
+            RestParams par = produceRestParam(RestHelper.POST, Optional.empty());
             return par;
         }
 
@@ -350,7 +351,7 @@ public class CivRestServices {
         }
     }
 
-    static class ServiceAllReady extends CivHttpHelper {
+    class ServiceAllReady extends CivHttpHelper {
 
         ServiceAllReady() {
             super("allready", true);
@@ -358,7 +359,7 @@ public class CivRestServices {
 
         @Override
         public RestParams getParams(HttpExchange httpExchange) throws IOException {
-            RestParams par = produceRestParam(RestHelper.GET,Optional.of(RestParams.CONTENT.TEXT));
+            RestParams par = produceRestParam(RestHelper.GET, Optional.of(RestParams.CONTENT.TEXT));
             return par;
         }
 
@@ -371,9 +372,7 @@ public class CivRestServices {
         }
     }
 
-    static class ServiceDeployGame extends CivHttpHelper {
-
-        private final static String CIV = "civ";
+    class ServiceDeployGame extends CivHttpHelper {
 
         ServiceDeployGame() {
             super("deploygame");
@@ -381,7 +380,7 @@ public class CivRestServices {
 
         @Override
         public RestParams getParams(HttpExchange httpExchange) throws IOException {
-            RestParams par = produceRestParam(RestHelper.POST,Optional.of(RestParams.CONTENT.JSON));
+            RestParams par = produceRestParam(RestHelper.POST, Optional.of(RestParams.CONTENT.JSON));
             par.addParam(CIV, PARAMTYPE.STRING);
             return par;
         }
@@ -391,10 +390,48 @@ public class CivRestServices {
         public void servicehandle(RestHelper.IQueryInterface v) throws IOException {
             String civs = getStringParam(v, CIV);
             InputStream is = v.getT().getRequestBody();
-            String board = toS(is);
+            String board = RestHelper.toS(is);
             String res = II.readPlayerGameS(board, civs);
             produceOKResponse(v, res);
         }
+    }
+
+    class ResumeGame extends CivHttpHelper {
+
+        ResumeGame() {
+            super("resumegame");
+        }
+
+        @Override
+        public RestParams getParams(HttpExchange httpExchange) throws IOException {
+            RestParams par = produceRestParam(RestHelper.GET, Optional.of(RestParams.CONTENT.TEXT));
+            par.addParam(GAMEID, PARAMTYPE.INT);
+            par.addParam(CIV, PARAMTYPE.STRING);
+            return par;
+        }
+
+
+        @Override
+        public void servicehandle(RestHelper.IQueryInterface v) throws IOException {
+            String civs = getStringParam(v, CIV);
+            int gameid = getIntParam(v, GAMEID);
+            String res = II.resumeGame(gameid, civs);
+            produceOKResponse(v, res);
+        }
+    }
+
+    void registerServices(HttpServer server) {
+        RestHelper.registerService(server, new CivRestServices.ServiceRegisterAutom());
+        RestHelper.registerService(server, new CivRestServices.ServiceCivData());
+        RestHelper.registerService(server, new CivRestServices.GetWaitingGame());
+        RestHelper.registerService(server, new CivRestServices.ServiceJoinGame());
+        RestHelper.registerService(server, new CivRestServices.ServiceItemizeCommand());
+        RestHelper.registerService(server, new CivRestServices.ServiceExecuteCommand());
+        RestHelper.registerService(server, new CivRestServices.ServiceDeleteGame());
+        RestHelper.registerService(server, new CivRestServices.ServiceClearWaiting());
+        RestHelper.registerService(server, new CivRestServices.ServiceAllReady());
+        RestHelper.registerService(server, new CivRestServices.ServiceDeployGame());
+        RestHelper.registerService(server, new CivRestServices.ResumeGame());
     }
 
 }

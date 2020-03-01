@@ -46,9 +46,10 @@
         </dependency>
 
         <dependency>
-            <groupId>com.civlizationengine</groupId>
+            <groupId>com.restservice</groupId>
             <artifactId>RestService</artifactId>
             <version>1.0</version>
+            <scope>jar</scope>
         </dependency>
 
     </dependencies>
