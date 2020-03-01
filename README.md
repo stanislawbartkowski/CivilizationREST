@@ -226,11 +226,38 @@ This call deletes the game identified by *gameid*. The game is not available any
 | -- | -- |
 | URL | /delete
 | Request type | DELETE
-| URL Params | gameid, integer, obligator, the identifier of the game to remove
+| URL Params | gameid, integer, obligatory, the identifier of the game to remove
 | Success response | 204
 | Response data | nothing
 | Error response | Any other. The call does not report any error if the game does not exist.
 | Sample call | curl -X DELETE "http://localhost:8000/rest/delete?gameid=5"
+
+## Resume the game
+
+The call resume existing game and returns a new token for player. 
+
+| Info | Content
+| -- | -- |
+| URL | /resumegame
+| Request type | GET
+| URL Params | gameid, integer, obligatory, the identifier of the game to remove
+| URL Params | civ, string, obligatory, the civilization to play after resuming. The game can be two-players game and the player can choose the civilization to start with. For single player game, the civilization name
+| Success response | 200
+| Response data | token, gameid
+| Error response | Any other. The call does not report any error if the game does not exist.
+| Sample call | curl -X DELETE "http://localhost:8000/rest/resumegame?gameid=5,civ=China" 
+
+Sample culr session<br>
+> curl -X GET "http://localhost:8000/rest/civdata?what=3"
+```JSON
+[{"gameid":5,"civ":["China"],"createtime":1583083494071,"accesstime":1583083494071,"phase":"StartOfTurn","round":0,"endofgame":null},{"gameid":4,"civ":["China"],"createtime":1583083450527,"accesstime":1583083450527,"phase":"StartOfTurn","round":0,"endofgame":null},{"gameid":3,"civ":["China"],"createtime":1583083389854,"accesstime":1583083389854,"phase":"StartOfTurn","round":0,"endofgame":null},{"gameid":2,"civ":["China"],"createtime":1583082678979,"accesstime":1583082678979,"phase":"StartOfTurn","round":0,"endofgame":null},{"gameid":1,"civ":["China"],"createtime":1583079731884,"accesstime":1583079731884,"phase":"StartOfTurn","round":0,"endofgame":null}]
+```
+Resume game 5 as civilization China
+>  curl -X GET "http://localhost:8000/rest/resumegame?gameid=5&civ=China"
+```
+4plls0ishcin99umca2s0mvi5i,5
+```
+The game is resumed and the China player token is : 4plls0ishcin99umca2s0mvi5i
 
 ## Clear the waiting for automated player list.
 
@@ -261,8 +288,15 @@ This call deploys the game board in JSON format and creates a new game.
 | Sample call | curl -X POST "http://localhost:8000/rest/deploygame?civ=China" -d /< JSON \>"
 
 # Standalone server
+The only dependency is simple RestService module.<br>
+<br>
+Download and install RestService to the local Maven repository.
+https://github.com/stanislawbartkowski/RestService<br>
+<br>
+The RestService is using embedded Java HTTP Server, no additional dependency is required.<br>
 https://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/HttpServer.html <br>
-The server is using embedded Java HTTP Server, no additional dependency is required.<br>
+<br>
+
 > git clone https://github.com/stanislawbartkowski/CivilizationREST.git<br>
 
 ## Customize
