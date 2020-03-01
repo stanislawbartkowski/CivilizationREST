@@ -245,7 +245,19 @@ The call resume existing game and returns a new token for player.
 | Success response | 200
 | Response data | token, gameid
 | Error response | Any other. The call does not report any error if the game does not exist.
-| Sample call | curl -X DELETE "http://localhost:8000/rest/resumegame?gameid=5,civ=China"
+| Sample call | curl -X DELETE "http://localhost:8000/rest/resumegame?gameid=5,civ=China" 
+
+Sample culr session<br>
+> curl -X GET "http://localhost:8000/rest/civdata?what=3"
+```JSON
+[{"gameid":5,"civ":["China"],"createtime":1583083494071,"accesstime":1583083494071,"phase":"StartOfTurn","round":0,"endofgame":null},{"gameid":4,"civ":["China"],"createtime":1583083450527,"accesstime":1583083450527,"phase":"StartOfTurn","round":0,"endofgame":null},{"gameid":3,"civ":["China"],"createtime":1583083389854,"accesstime":1583083389854,"phase":"StartOfTurn","round":0,"endofgame":null},{"gameid":2,"civ":["China"],"createtime":1583082678979,"accesstime":1583082678979,"phase":"StartOfTurn","round":0,"endofgame":null},{"gameid":1,"civ":["China"],"createtime":1583079731884,"accesstime":1583079731884,"phase":"StartOfTurn","round":0,"endofgame":null}]
+```
+Resume game 5 as civilization China
+>  curl -X GET "http://localhost:8000/rest/resumegame?gameid=5&civ=China"
+```
+4plls0ishcin99umca2s0mvi5i,5
+```
+The game is resumed and the China player token is : 4plls0ishcin99umca2s0mvi5i
 
 ## Clear the waiting for automated player list.
 
