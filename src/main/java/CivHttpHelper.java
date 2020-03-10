@@ -45,7 +45,7 @@ abstract class CivHttpHelper extends RestHelper.RestServiceHelper {
         mallowed.add(RestHelper.DELETE);
         mallowed.add(RestHelper.POST);
 
-        RestParams res = new RestParams(requestMethod,responseContent,crossAllowed,mallowed);
+        RestParams res = new RestParams(requestMethod,responseContent,crossAllowed,mallowed, Optional.empty());
         return res;
     }
 
