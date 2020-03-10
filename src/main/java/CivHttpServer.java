@@ -22,7 +22,7 @@ public class CivHttpServer extends RestStart {
         System.out.println(s);
     }
 
-    private final static String CORS="cors";
+    private final static String CORS = "cors";
 
     private static void printhelp() {
         P("Usage: java ..  CivHttpServer /port/ /redishost/ /redisport/ /cross/");
@@ -47,7 +47,7 @@ public class CivHttpServer extends RestStart {
             System.exit(4);
         }
         if (args.length == 4) CivHttpHelper.setCrossAllowed(true);
-        RestStart(PORT, server-> serv.registerServices(server));
+        RestStart(PORT, server -> serv.registerServices(server), new String[]{});
     }
 
 }
