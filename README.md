@@ -259,7 +259,7 @@ The call resume existing game and returns a new token for player.
 | Success response | 200
 | Response data | token, gameid
 | Error response | Any other. The call does not report any error if the game does not exist.
-| Sample call | curl -X DELETE "http://localhost:8000/rest/resumegame?gameid=5,civ=China" 
+| Sample call | curl -X GET "http://localhost:8000/rest/resumegame?gameid=5,civ=China" 
 
 Sample culr session<br>
 > curl -X GET "http://localhost:8000/rest/civdata?what=3"
