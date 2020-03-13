@@ -74,8 +74,7 @@ Gets current board for the player identified by token
 | Success response | 200
 | Response data | The current board. If the board has not changed since the last call, returns empty string ""
 | Error response | Any other
-| Sample call | curl -X GET "http://localhost:8000/rest/civdata?what=2"
-
+| Sample call | curl -X GET -H "Authorization: Token 8ordddftj4dek3m3f9vkp826k8" "http://localhost:8000/rest/civdata?what=2"
 
 ### Initialize single player, training game
 This CivRest API call return in JSON format a list of all games registered. 
