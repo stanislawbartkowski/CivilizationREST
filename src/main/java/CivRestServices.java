@@ -13,9 +13,7 @@
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
-import com.rest.restservice.PARAMTYPE;
-import com.rest.restservice.ParamValue;
-import com.rest.restservice.RestParams;
+import com.rest.restservice.*;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
@@ -27,7 +25,6 @@ import java.util.logging.Level;
 import civilization.II.interfaces.IC;
 import civilization.II.interfaces.RAccess;
 
-import com.rest.restservice.RestHelper;
 import com.sun.net.httpserver.HttpServer;
 
 class CivRestServices {
@@ -145,8 +142,12 @@ class CivRestServices {
             String param = null;
             if (tokenexpected.contains(what)) {
                 Optional<String> token = getAuthorizationToken(v, true);
-                if (!token.isPresent()) return;
+                if (!token.isPresent()) {
+                    RestLogger.L.severe("Token not found in the header.");
+                    return;
+                }
                 param = token.get();
+                RestLogger.info(param);
             }
             if (paramexpected.contains(what)) {
                 Optional<String> s = getStringParamExpected(v, PARAM);

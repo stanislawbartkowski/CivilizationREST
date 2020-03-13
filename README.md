@@ -14,6 +14,7 @@ Example<br>
 
 The CivilizationREST allows engagement of automated player.<br>
 At the beginning, the automated player should register itself using "Register automation" API. It is only the signal "I'm up and ready". The signal unlocks "Get Civilization data/start two players with automated" API call.<br>
+Some REST API calls requires token. The token should included in the header: "Authentication: token /token/".
 <br>
 To start the automated game, the following sequence should happen.<br.
 * The human or another automated player should launch "Get Civilization data/start two players with automated" API call. It returns the token of the player, human or another automated if machine to machine game is going to be started. The new game is started and waiting for another player to join.
@@ -63,6 +64,19 @@ The following data (*what* parameter) are possible.
 |TWOPLAYERSGAMEWITHAUTOM|8| Initialize game with automated player
 |SINGLEGAMEWITHAUTOM|9
 
+### Get current board
+Gets current board for the player identified by token
+| Info | Content
+| -- | -- |
+| URL | /civdata
+| Request type | GET
+| URL Params | what=2, obligatory
+| Success response | 200
+| Response data | The current board. If the board has not changed since the last call, returns empty string ""
+| Error response | Any other
+| Sample call | curl -X GET "http://localhost:8000/rest/civdata?what=2"
+
+
 ### Initialize single player, training game
 This CivRest API call return in JSON format a list of all games registered. 
 | Info | Content
@@ -70,7 +84,7 @@ This CivRest API call return in JSON format a list of all games registered.
 | URL | /civdata
 | Request type | GET
 | URL Params | what=0, obligatory
-| URL Params | Civilization name to start with
+| URL Params | param=/name/ Civilization name to start with
 | Success response | 200
 | Response data | Token
 | Error response | Any other
@@ -245,7 +259,7 @@ The call resume existing game and returns a new token for player.
 | Success response | 200
 | Response data | token, gameid
 | Error response | Any other. The call does not report any error if the game does not exist.
-| Sample call | curl -X DELETE "http://localhost:8000/rest/resumegame?gameid=5,civ=China" 
+| Sample call | curl -X GET "http://localhost:8000/rest/resumegame?gameid=5,civ=China" 
 
 Sample culr session<br>
 > curl -X GET "http://localhost:8000/rest/civdata?what=3"
