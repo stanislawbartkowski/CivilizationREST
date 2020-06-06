@@ -34,7 +34,7 @@ abstract class CivHttpHelper extends RestHelper.RestServiceHelper {
     }
 
     protected CivHttpHelper(String url) {
-        super(REST+url, false);
+        super(REST + url, false);
     }
 
     protected RestParams produceRestParam(String requestMethod, Optional<RestParams.CONTENT> responseContent) {
@@ -45,7 +45,7 @@ abstract class CivHttpHelper extends RestHelper.RestServiceHelper {
         mallowed.add(RestHelper.DELETE);
         mallowed.add(RestHelper.POST);
 
-        RestParams res = new RestParams(requestMethod,responseContent,crossAllowed,mallowed, Optional.empty());
+        RestParams res = new RestParams(requestMethod, responseContent, crossAllowed, mallowed, Optional.empty(),false);
         return res;
     }
 

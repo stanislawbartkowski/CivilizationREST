@@ -245,7 +245,6 @@ class CivRestServices {
             return par;
         }
 
-
     }
 
     class ServiceItemizeCommand extends CivHttpHelper {
