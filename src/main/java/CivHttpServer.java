@@ -29,7 +29,7 @@ public class CivHttpServer extends RestStart {
         P("  /port/ : port number CivRestServer is listening");
         P("  /redishost/ : Redis host name");
         P("  /redispost/ : Redis port");
-        P("  /cross/ : CORS policy allowed");
+        P("  /cors/ : CORS policy allowed");
         P("            should be value " + CORS);
     }
 
@@ -46,7 +46,11 @@ public class CivHttpServer extends RestStart {
             printhelp();
             System.exit(4);
         }
-        if (args.length == 4) CivHttpHelper.setCrossAllowed(true);
+        if (args.length == 4) {
+            CivLogger.info("CORS allowed");
+            CivHttpHelper.setCrossAllowed(true);
+        }
+        else CivLogger.info("CORS blocked");
         RestStart(PORT, server -> serv.registerServices(server), new String[]{});
     }
 
