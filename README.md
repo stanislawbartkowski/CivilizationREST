@@ -199,7 +199,7 @@ This API call takes the list of all currently possible variants of the command.
 | Success response | 200
 | Response data | JSON, list of possible variants of the command
 | Error response | Any other
-| Sample call | curl -X POST "http://localhost:8000/rest/itemize?token=xxxxx&command=SETCAPITAL"
+| Sample call | curl -X POST "http://localhost:8000/rest/itemize?command=SETCAPITAL"
 
 ## Execute command
 Executes command in the current game. The player is identified by the token received from "Get Civilization data, start two players game with automated player" or "Join game". The (row,column) identifies the boards square. If the command/action is not dependent on it, pass (-1,-1). The *jsparam* provided command parameter. It's format and content depend on the command.
@@ -216,7 +216,7 @@ Executes command in the current game. The player is identified by the token rece
 | Success response | 200
 | Response data | Empty string if success. If not empty, error occured and the reponse contains the error message.
 | Error response | Any other
-| Sample call | curl -X POST "http://localhost:8000/rest/itemize?token=8jd6f1dpnl66dkk6mmr1eb266e&action=SETCAPITAL&row=1&col=2"
+| Sample call | curl -X POST "http://localhost:8000/rest/command?action=SETCAPITAL&row=1&col=2"
 
 ## All player are ready
 This call checks if all players are registered. For two players game, it returns true if the second player has joined the game.
