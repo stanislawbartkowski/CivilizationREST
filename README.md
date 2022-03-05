@@ -77,6 +77,8 @@ The following data (*what* parameter) are possible.
 |GETJOURNAL|7|Get the player journal
 |TWOPLAYERSGAMEWITHAUTOM|8| Initialize game with automated player
 |SINGLEGAMEWITHAUTOM|9
+| GETVERSIONSSTRING | 10 | Version string
+
 
 ### Get current board
 Gets current board for the player identified by token
