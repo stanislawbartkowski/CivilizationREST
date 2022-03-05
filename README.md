@@ -10,6 +10,13 @@ The first part of HTTP URL is always *rest*.<br>
 Example<br>
 > http://\<server host\>:\<port number\>/rest/registerautom?autom=true
 
+## Example
+
+> curl -X GET 'http://localhost:7999/rest/civdata?what=10'
+```JSON
+{ "civ" : "Civilization Engine 1.0, 2022/03/05", "rest": "Civilization REST API, version 1.0, 2022/03/05" }
+```
+
 ## Automated player
 
 The CivilizationREST allows engagement of automated player.<br>
