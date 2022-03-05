@@ -20,7 +20,7 @@ Example<br>
 > curl -X GET 'http://localhost:7999/rest/civdata?what=0'
 ```
 .....
-(list of all resource)
+(list of all resources)
 .....
 ```
 
