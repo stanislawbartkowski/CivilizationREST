@@ -17,6 +17,13 @@ Example<br>
 { "civ" : "Civilization Engine 1.0, 2022/03/05", "rest": "Civilization REST API, version 1.0, 2022/03/05" }
 ```
 
+> curl -X GET 'http://localhost:7999/rest/civdata?what=0'
+```
+.....
+(list of all resource)
+.....
+```
+
 ## Automated player
 
 The CivilizationREST allows engagement of automated player.<br>
