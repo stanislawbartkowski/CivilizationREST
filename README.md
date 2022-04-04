@@ -1,5 +1,50 @@
 # CivilizationREST
 
+## Installation
+
+### Prereq
+
+* Java 11
+* mvn
+* sbt
+
+### Civilization engine
+
+https://github.com/stanislawbartkowski/CivilizationEngine
+
+Compile sources and create jar 
+
+> cbt clean assembly
+
+Deploy to local Maven repository
+
+>./mvndeploy.sh
+
+### Create CivilizationREST jar
+
+Configure Maven setting to get access to dependency
+
+https://github.com/stanislawbartkowski/wikis/wiki/Silva-rerum#github-maven
+
+> mvn package
+
+### COnfigure CivilizationREST service
+
+> cp template/rest.rc<br>
+
+Configure
+
+>vi rest.rc
+```
+PORT=9999
+REDISHOST=localhost
+REDISPORT=6379
+```
+### Run the service
+
+>nohup ./run.sh & <br>
+> tail -f nohup.out
+
 ## General information
 
 REST API service for Civilization Engine.<br>
