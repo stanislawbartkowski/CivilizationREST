@@ -88,6 +88,7 @@ public class CivHttpServer extends RestStart {
         P(String.format("Redis host: %s",res.getREDISHOST()));
         P(String.format("Redis port: %d",res.getREDISPORT()));
         P(res.isNOCORS() ? "CORS not allowed" : "CORS allowed");
+        if (! res.isNOCORS()) CivHttpHelper.setCrossAllowed(true);
         CivRestServices serv = new CivRestServices();
         serv.setRedis(res.getREDISHOST(), res.getREDISPORT());
         RestStart(res.getPORT(), server -> serv.registerServices(server), new String[]{});
