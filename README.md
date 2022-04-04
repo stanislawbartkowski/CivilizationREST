@@ -28,7 +28,7 @@ https://github.com/stanislawbartkowski/wikis/wiki/Silva-rerum#github-maven
 
 > mvn package
 
-### COnfigure CivilizationREST service
+### Configure CivilizationREST service
 
 > cp template/rest.rc<br>
 
