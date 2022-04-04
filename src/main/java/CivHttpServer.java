@@ -11,7 +11,11 @@
  * limitations under the License.
  */
 
+import com.rest.restservice.RestLogger;
 import com.rest.restservice.RestStart;
+import org.apache.commons.cli.*;
+import java.util.logging.Level;
+
 
 /*
  * a simple static http server
@@ -19,39 +23,74 @@ import com.rest.restservice.RestStart;
 public class CivHttpServer extends RestStart {
 
     private static void P(String s) {
-        System.out.println(s);
+        CivLogger.info(s);
     }
 
-    private final static String CORS = "cors";
+    private static final String PORT="p";
+    private static final String REDISPORT="rp";
+    private static final String REDISHOST = "rh";
+    private static final String NOCORS = "nocors";
 
-    private static void printhelp() {
-        P("Usage: java ..  CivHttpServer /port/ /redishost/ /redisport/ /cross/");
-        P("  /port/ : port number CivRestServer is listening");
-        P("  /redishost/ : Redis host name");
-        P("  /redispost/ : Redis port");
-        P("  /cors/ : CORS policy allowed");
-        P("            should be value " + CORS);
+    public static class RestParams {
+
+        private final CommandLine cmd;
+
+        RestParams(CommandLine cmd) {
+            this.cmd = cmd;
+        }
+
+        public int getPORT() {
+            return Integer.parseInt(cmd.getOptionValue(PORT));
+        }
+
+        public int getREDISPORT() {
+            return Integer.parseInt(cmd.getOptionValue(REDISPORT));
+        }
+
+        public String getREDISHOST() {
+            return cmd.getOptionValue(REDISHOST);
+        }
+
+        public boolean isNOCORS() {
+            return cmd.hasOption(NOCORS);
+        }
+
+    }
+
+    private static RestParams buildCmd(String[] args) {
+
+        final Options options = new Options();
+        Option port = Option.builder(PORT).desc("Port number").numberOfArgs(1).type(Integer.class).numberOfArgs(1).required().build();
+        Option redhost = Option.builder(REDISHOST).desc("Redis hostname").numberOfArgs(1).required().build();
+        Option redport = Option.builder(REDISPORT).desc("Redis port number").numberOfArgs(1).type(Integer.class).required().build();
+        Option cors = Option.builder(NOCORS).desc("CORS not allowed (default allowed)").build();
+        options.addOption(port).addOption(redhost).addOption(redport).addOption(cors);
+        CommandLineParser parser = new DefaultParser();
+        try {
+            CommandLine cmd = parser.parse(options, args);
+            return new RestParams(cmd);
+        } catch (ParseException e) {
+            P(CivRestServices.CIVVERSION);
+            RestLogger.L.log(Level.SEVERE,e.getMessage(),e);
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("java /parameters/", options);
+            System.exit(4);
+            return null;
+        }
     }
 
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 3 && args.length != 4) {
-            printhelp();
-            System.exit(4);
-        }
+        P(CivRestServices.CIVVERSION);
+        P(CivRestServices.RESTVERSION);
+        RestParams res = buildCmd(args);
+        P(String.format("Port:%d",res.getPORT()));
+        P(String.format("Redis host: %s",res.getREDISHOST()));
+        P(String.format("Redis port: %d",res.getREDISPORT()));
+        P(res.isNOCORS() ? "CORS not allowed" : "CORS allowed");
         CivRestServices serv = new CivRestServices();
-        serv.setRedis(args[1], Integer.parseInt(args[2]));
-        int PORT = Integer.parseInt(args[0]);
-        if (args.length == 4 && !CORS.equals(args[3])) {
-            printhelp();
-            System.exit(4);
-        }
-        if (args.length == 4) {
-            CivLogger.info("CORS allowed");
-            CivHttpHelper.setCrossAllowed(true);
-        }
-        else CivLogger.info("CORS blocked");
-        RestStart(PORT, server -> serv.registerServices(server), new String[]{});
+        serv.setRedis(res.getREDISHOST(), res.getREDISPORT());
+        RestStart(res.getPORT(), server -> serv.registerServices(server), new String[]{});
     }
 
 }

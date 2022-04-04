@@ -22,7 +22,6 @@ class CivLogger {
     }
 
     public static void debug(String s) {
-//        L.log(Level.FINE,s);
         info(s);
     }
 

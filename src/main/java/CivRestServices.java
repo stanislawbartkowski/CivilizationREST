@@ -11,16 +11,12 @@
  * limitations under the License.
  */
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 import com.rest.restservice.*;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.*;
-import java.util.logging.Level;
 
 import civilization.II.interfaces.IC;
 import civilization.II.interfaces.RAccess;
@@ -28,6 +24,9 @@ import civilization.II.interfaces.RAccess;
 import com.sun.net.httpserver.HttpServer;
 
 class CivRestServices {
+
+    static final String CIVVERSION = "CivRestService version 1.00 04/04/2022";
+    static final String RESTVERSION = RestStart.VERSTRING;
 
     private final IC II = civilization.II.factory.Factory$.MODULE$.getI();
     private final RAccess RA = civilization.II.factory.Factory$.MODULE$.getR();
@@ -56,6 +55,37 @@ class CivRestServices {
         // insert at the beginning
         waitinglist.add(a[1]);
         return a[0];
+    }
+
+    class ServiceRegisterVersion extends CivHttpHelper {
+        ServiceRegisterVersion() {
+            super("civversion");
+        }
+
+        @Override
+        public RestParams getParams(HttpExchange httpExchange) throws IOException {
+            RestParams par = produceRestParam(RestHelper.GET, Optional.empty());
+            return par;
+        }
+
+
+        private void addVer(StringBuffer b, String key, String value) {
+            b.append("\"" + key + "\" , \"" + value + "\"");
+        }
+
+        @Override
+        public void servicehandle(RestHelper.IQueryInterface v) throws IOException, InterruptedException {
+            String cres = II.CIVVERSTRING();
+            StringBuffer b = new StringBuffer("{");
+            addVer(b, "restver", RESTVERSION);
+            b.append(',');
+            addVer(b, "civver", cres);
+            b.append(',');
+            addVer(b, "civrestver", CIVVERSION);
+            b.append('}');
+
+            produceOKResponse(v, b.toString());
+        }
     }
 
     class ServiceRegisterAutom extends CivHttpHelper {
@@ -289,7 +319,7 @@ class CivRestServices {
             par.addParam(ACTION, PARAMTYPE.STRING);
             par.addParam(ROW, PARAMTYPE.INT);
             par.addParam(COL, PARAMTYPE.INT);
-            par.addParam(JSPARAM, PARAMTYPE.STRING, new ParamValue(null));
+            par.addParam(JSPARAM, PARAMTYPE.STRING);
             return par;
         }
 
@@ -432,6 +462,8 @@ class CivRestServices {
         RestHelper.registerService(server, new CivRestServices.ServiceAllReady());
         RestHelper.registerService(server, new CivRestServices.ServiceDeployGame());
         RestHelper.registerService(server, new CivRestServices.ResumeGame());
+        RestHelper.registerService(server, new CivRestServices.ServiceRegisterVersion());
+
     }
 
 }
